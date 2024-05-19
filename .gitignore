@@ -4,3 +4,7 @@
 # CMake
 cmake-build-debug/
 deploy/
+
+# Libraries
+include/
+lib/
