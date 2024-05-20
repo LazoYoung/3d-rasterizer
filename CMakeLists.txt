@@ -11,8 +11,8 @@ file(GLOB_RECURSE HEADER_FILES
         "${CMAKE_SOURCE_DIR}/src/*.cuh"
 )
 
-file(GLOB_RECURSE GLFW_LIBS
-        "${CMAKE_SOURCE_DIR}/lib/*.lib"
+file(GLOB_RECURSE DLL_FILES
+        "${CMAKE_SOURCE_DIR}/lib/*.dll"
 )
 
 # Supply source files to produce executable
@@ -43,3 +43,9 @@ target_include_directories(gaussian_rasterizer PUBLIC "${CMAKE_SOURCE_DIR}/inclu
 
 # Linking
 target_link_libraries(gaussian_rasterizer PUBLIC OpenGL::GL glfw3 glfw3_mt glfw3dll glad)
+
+# Copy DLL
+add_custom_command(
+        TARGET gaussian_rasterizer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL_FILES} $<TARGET_FILE_DIR:gaussian_rasterizer>
+)
