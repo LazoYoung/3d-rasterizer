@@ -16,9 +16,9 @@ file(GLOB_RECURSE LIBS
         ${CMAKE_SOURCE_DIR}/lib/*.lib
 )
 
+# Supply source files to produce executable
 add_executable(gaussian_rasterizer ${SOURCE_FILES} ${HEADER_FILES})
 
-set_property(TARGET gaussian_rasterizer PROPERTY LINKER_LANGUAGE CXX)
 set_property(TARGET gaussian_rasterizer PROPERTY CUDA_STANDARD 17)
 set_property(TARGET gaussian_rasterizer PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 set_property(TARGET gaussian_rasterizer PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deploy")
