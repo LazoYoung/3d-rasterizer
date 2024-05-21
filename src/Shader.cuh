@@ -18,37 +18,24 @@ struct ShaderUnit {
 
 class Shader {
 public:
-    Shader() = default;
+    Shader();
 
     ~Shader();
 
     void attachShader(const char *source, GLenum type);
 
+    void compile();
+
+    void link() const;
+
 private:
     vector<ShaderUnit> units;
-    GLuint *program;
-    const char *vertexSource = R"(
-layout (location = 0) in vec3 aPos;
-void main() {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-}
-)";
-    const char *fragmentSource = R"(
-out vec4 fragColor;
-void main() {
-    fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-}
-)";
+    GLuint program;
 
     static const char *getShaderName(GLenum type);
 
     static void compile(const ShaderUnit &shader);
 
-    void link();
-
-    void compile(GLuint shaderProgram);
-
-    GLuint getShaderProgram();
 };
 
 

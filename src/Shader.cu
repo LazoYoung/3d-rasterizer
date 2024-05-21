@@ -3,41 +3,40 @@
 
 // todo: vertex and uniform injection
 
+Shader::Shader() {
+    program = glCreateProgram();
+}
+
 // todo: is this right place to delete shaders?
 Shader::~Shader() {
     for (ShaderUnit unit: units) {
         glDeleteShader(unit.id);
     }
-
-    free(program);
 }
 
-GLuint Shader::getShaderProgram() {
-    if (!program) {
-        program = static_cast<GLuint *>(malloc(sizeof(GLuint)));
-        *program = glCreateProgram();
-    }
-
-    return *program;
-}
+//GLuint Shader::getShaderProgram() {
+//    if (!program) {
+//        program = static_cast<GLuint *>(malloc(sizeof(GLuint)));
+//        *program = glCreateProgram();
+//    }
+//
+//    return *program;
+//}
 
 void Shader::attachShader(const char *source, GLenum type) {
     auto id = glCreateShader(type);
     units.emplace_back(source, id, type);
 }
 
-void Shader::compile(GLuint shaderProgram) {
+void Shader::compile() {
     for (ShaderUnit unit: units) {
         compile(unit);
-        glAttachShader(shaderProgram, unit.id);
+        glAttachShader(program, unit.id);
     }
-
-    glLinkProgram(shaderProgram);
-
 }
 
-void Shader::link() {
-
+void Shader::link() const {
+    glLinkProgram(program);
 }
 
 void Shader::compile(const ShaderUnit &shader) {
@@ -69,4 +68,3 @@ const char *Shader::getShaderName(GLenum type) {
             return "Unknown shader";
     }
 }
-
