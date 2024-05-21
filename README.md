@@ -10,7 +10,7 @@
 2. Unzip the file to extract `include` and `src` folders
 3. Place them under the project root
 
-### File Structure
+### Project Structure
 <img src="resources/project_structure.png" alt="drawing" width="360"/>
 
 ### Build project
