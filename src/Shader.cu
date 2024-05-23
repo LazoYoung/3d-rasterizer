@@ -23,24 +23,31 @@ Shader::~Shader() {
 //    return *program;
 //}
 
-void Shader::attachShader(const char *source, GLenum type) {
+void Shader::add(const char *source, GLenum type) {
     auto id = glCreateShader(type);
+    glShaderSource(id, 1, &source, nullptr);
     units.emplace_back(source, id, type);
 }
 
 void Shader::compile() {
     for (ShaderUnit unit: units) {
         compile(unit);
-        glAttachShader(program, unit.id);
     }
 }
 
 void Shader::link() const {
+    for (ShaderUnit unit: units) {
+        glAttachShader(program, unit.id);
+    }
+
     glLinkProgram(program);
+
+    for (ShaderUnit unit: units) {
+        glDeleteShader(unit.id);
+    }
 }
 
 void Shader::compile(const ShaderUnit &shader) {
-    glShaderSource(shader.id, 1, &shader.source, nullptr);
     glCompileShader(shader.id);
 
     int success;

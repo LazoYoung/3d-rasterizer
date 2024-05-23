@@ -22,7 +22,7 @@ public:
 
     ~Shader();
 
-    void attachShader(const char *source, GLenum type);
+    void add(const char *source, GLenum type);
 
     void compile();
 
