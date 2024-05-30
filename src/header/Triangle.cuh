@@ -7,7 +7,7 @@
 
 
 namespace Triangle {
-    void Draw(const Shader& shader);
+    void Draw();
 }
 
 

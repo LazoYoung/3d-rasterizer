@@ -41,8 +41,10 @@ bool Window::init() {
 void Window::startDrawing(Shader &shader) {
     while (!glfwWindowShouldClose(window)) {
         processInput();
+
+        shader.use();
         drawBackground();
-        Triangle::Draw(shader);
+        Triangle::Draw();
 
         // The front buffer represents the image being displayed
         // while all the rendering commands draw to the back buffer.

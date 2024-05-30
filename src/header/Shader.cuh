@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <string>
 
 
 using namespace std;
@@ -22,13 +23,18 @@ public:
 
     ~Shader();
 
-    void add(const char *source, GLenum type);
+    void add(const char *path, GLenum type);
 
-    GLuint getProgram() const;
+    GLuint getProgramID() const;
+
+    template <typename T>
+    void setUniform(const string &name, T value) const;
 
     void compile();
 
     void link() const;
+
+    void use() const;
 
 private:
     vector<ShaderUnit> units;
@@ -37,6 +43,8 @@ private:
     static const char *getShaderName(GLenum type);
 
     static void compile(const ShaderUnit &shader);
+
+    static string getSource(const char *path);
 };
 
 
