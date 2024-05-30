@@ -1,5 +1,6 @@
+#include "header/Window.cuh"
+#include "header/Triangle.cuh"
 #include <iostream>
-#include "Window.cuh"
 
 using namespace std;
 
@@ -37,10 +38,11 @@ bool Window::init() {
     return true;
 }
 
-void Window::enterRenderingLoop() {
+void Window::startDrawing(Shader &shader) {
     while (!glfwWindowShouldClose(window)) {
         processInput();
         drawBackground();
+        Triangle::Draw(shader);
 
         // The front buffer represents the image being displayed
         // while all the rendering commands draw to the back buffer.
@@ -65,3 +67,7 @@ void Window::drawBackground() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+
+//Shader& Window::getShader() {
+//    return shader;
+//}

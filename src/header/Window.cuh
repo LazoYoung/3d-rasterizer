@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Shader.cuh"
 
 
 class Window {
@@ -15,7 +16,7 @@ public:
 
     bool init();
 
-    void enterRenderingLoop();
+    void startDrawing(Shader &shader);
 
 private:
     int width;
@@ -23,11 +24,11 @@ private:
     const char *title;
     GLFWwindow *window;
 
-    static void onWindowResize(GLFWwindow *window, int width, int height);
-
     void processInput();
 
-    void drawBackground();
+    static void drawBackground();
+
+    static void onWindowResize(GLFWwindow *window, int width, int height);
 };
 
 

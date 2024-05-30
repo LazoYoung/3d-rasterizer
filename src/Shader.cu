@@ -1,7 +1,5 @@
 #include <stdexcept>
-#include "Shader.cuh"
-
-// todo: vertex and uniform injection
+#include "header/Shader.cuh"
 
 Shader::Shader() {
     program = glCreateProgram();
@@ -9,40 +7,33 @@ Shader::Shader() {
 
 // todo: is this right place to delete shaders?
 Shader::~Shader() {
-    for (ShaderUnit unit: units) {
+    for (const ShaderUnit &unit: units) {
         glDeleteShader(unit.id);
     }
 }
 
-//GLuint Shader::getShaderProgram() {
-//    if (!program) {
-//        program = static_cast<GLuint *>(malloc(sizeof(GLuint)));
-//        *program = glCreateProgram();
-//    }
-//
-//    return *program;
-//}
-
+// todo: support uniform shader
 void Shader::add(const char *source, GLenum type) {
     auto id = glCreateShader(type);
+    ShaderUnit unit{source, type, id};
     glShaderSource(id, 1, &source, nullptr);
-    units.emplace_back(source, id, type);
+    units.push_back(unit);
 }
 
 void Shader::compile() {
-    for (ShaderUnit unit: units) {
-        compile(unit);
+    for (const ShaderUnit &unit: units) {
+        Shader::compile(unit);
     }
 }
 
 void Shader::link() const {
-    for (ShaderUnit unit: units) {
+    for (const ShaderUnit &unit: units) {
         glAttachShader(program, unit.id);
     }
 
     glLinkProgram(program);
 
-    for (ShaderUnit unit: units) {
+    for (const ShaderUnit &unit: units) {
         glDeleteShader(unit.id);
     }
 }
@@ -59,7 +50,7 @@ void Shader::compile(const ShaderUnit &shader) {
 
         glGetShaderInfoLog(shader.id, 512, nullptr, infoLog);
         message.append(getShaderName(shader.type))
-                .append(" compilation error: ")
+                .append(" compilation error!\n")
                 .append(infoLog);
         throw runtime_error(message);
     }
@@ -74,4 +65,8 @@ const char *Shader::getShaderName(GLenum type) {
         default:
             return "Unknown shader";
     }
+}
+
+GLuint Shader::getProgram() const {
+    return program;
 }

@@ -12,8 +12,8 @@ using namespace std;
 
 struct ShaderUnit {
     const char *source;
-    GLuint id;
     GLenum type;
+    GLuint id;
 };
 
 class Shader {
@@ -23,6 +23,8 @@ public:
     ~Shader();
 
     void add(const char *source, GLenum type);
+
+    GLuint getProgram() const;
 
     void compile();
 
@@ -35,7 +37,6 @@ private:
     static const char *getShaderName(GLenum type);
 
     static void compile(const ShaderUnit &shader);
-
 };
 
 
