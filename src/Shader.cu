@@ -1,5 +1,8 @@
-#include <stdexcept>
 #include "header/Shader.cuh"
+#include <stdexcept>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 Shader::Shader() {
     program = glCreateProgram();
@@ -12,9 +15,10 @@ Shader::~Shader() {
     }
 }
 
-// todo: support uniform shader
-void Shader::add(const char *source, GLenum type) {
+void Shader::add(const char *path, GLenum type) {
     auto id = glCreateShader(type);
+    string source_str = getSource(path);
+    auto source = source_str.c_str();
     ShaderUnit unit{source, type, id};
     glShaderSource(id, 1, &source, nullptr);
     units.push_back(unit);
@@ -35,6 +39,25 @@ void Shader::link() const {
 
     for (const ShaderUnit &unit: units) {
         glDeleteShader(unit.id);
+    }
+}
+
+void Shader::use() const {
+    glUseProgram(program);
+}
+
+template<typename T>
+void Shader::setUniform(const string &name, T value) const {
+    auto _name = name.c_str();
+
+    if constexpr (is_same_v<T, int>) {
+        glUniform1i(glGetUniformLocation(program, _name), static_cast<GLint>(value));
+    } else if constexpr (is_same_v<T, bool>) {
+        glUniform1i(glGetUniformLocation(program, _name), static_cast<GLint>(value));
+    } else if constexpr (is_same_v<T, float>){
+        glUniform1f(glGetUniformLocation(program, _name), static_cast<GLfloat>(value));
+    } else {
+        throw invalid_argument("Unsupported uniform type!");
     }
 }
 
@@ -67,6 +90,26 @@ const char *Shader::getShaderName(GLenum type) {
     }
 }
 
-GLuint Shader::getProgram() const {
+GLuint Shader::getProgramID() const {
     return program;
+}
+
+string Shader::getSource(const char *path) {
+    string src;
+
+    try {
+        ifstream file;
+        stringstream stream;
+
+        file.exceptions(fstream::failbit | fstream::badbit);
+        file.open(path);
+        stream << file.rdbuf();
+        file.close();
+        src = stream.str();
+    } catch (fstream::failure &failure) {
+        cout << failure.what() << endl;
+        cout << "Failed to read: " << path << endl;
+    }
+
+    return src;
 }

@@ -32,8 +32,8 @@ int main() {
 
     try {
         Shader shader;
-        shader.add(vertexSource, GL_VERTEX_SHADER);
-        shader.add(fragmentSource, GL_FRAGMENT_SHADER);
+        shader.add("shader/triangle.vert", GL_VERTEX_SHADER);
+        shader.add("shader/triangle.frag", GL_FRAGMENT_SHADER);
         shader.compile();
         shader.link();
         window.startDrawing(shader);
