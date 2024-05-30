@@ -18,9 +18,10 @@ file(GLOB_RECURSE DLL_FILES
 # Supply source files to produce executable
 add_executable(gaussian_rasterizer ${SOURCE_FILES} ${HEADER_FILES})
 
+set(DEPLOY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deploy")
 set_property(TARGET gaussian_rasterizer PROPERTY CUDA_STANDARD 17)
 set_property(TARGET gaussian_rasterizer PROPERTY CUDA_SEPARABLE_COMPILATION ON)
-set_property(TARGET gaussian_rasterizer PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deploy")
+set_property(TARGET gaussian_rasterizer PROPERTY RUNTIME_OUTPUT_DIRECTORY ${DEPLOY_DIRECTORY})
 
 # OpenGL
 set_property(TARGET gaussian_rasterizer PROPERTY OpenGL_GL_PREFERENCE GLVND)
@@ -49,3 +50,13 @@ add_custom_command(
         TARGET gaussian_rasterizer POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL_FILES} $<TARGET_FILE_DIR:gaussian_rasterizer>
 )
+
+# Copy shader files
+set(SHADER_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/shader")
+set(SHADER_DEST_DIR "${DEPLOY_DIRECTORY}/shader")
+file(MAKE_DIRECTORY ${SHADER_DEST_DIR})
+add_custom_target(CopyShaders ALL
+        COMMAND ${CMAKE_COMMAND} -E echo "Copying GLSL files..."
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SOURCE_DIR} ${SHADER_DEST_DIR}
+)
+add_dependencies(gaussian_rasterizer CopyShaders)
