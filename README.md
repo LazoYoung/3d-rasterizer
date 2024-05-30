@@ -1,3 +1,6 @@
+## Abstract
+https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e345d
+
 ## Contribute
 ### Install GLFW
 1. Download [GLFW pre-compiled binaries](https://www.glfw.org/download.html) for Windows 64-bit
