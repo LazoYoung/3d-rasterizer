@@ -8,3 +8,4 @@ deploy/
 # Libraries
 include/
 lib/
+src/glad.c
