@@ -1,7 +1,5 @@
 #include "header/Shader.cuh"
-#include <stdexcept>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 Shader::Shader() {
@@ -19,7 +17,7 @@ void Shader::add(const char *path, GLenum type) {
     auto id = glCreateShader(type);
     string source_str = getSource(path);
     auto source = source_str.c_str();
-    ShaderUnit unit{source, type, id};
+    ShaderUnit unit{type, id};
     glShaderSource(id, 1, &source, nullptr);
     units.push_back(unit);
 }
@@ -42,23 +40,8 @@ void Shader::link() const {
     }
 }
 
-void Shader::use() const {
+void Shader::useProgram() const {
     glUseProgram(program);
-}
-
-template<typename T>
-void Shader::setUniform(const string &name, T value) const {
-    auto _name = name.c_str();
-
-    if constexpr (is_same_v<T, int>) {
-        glUniform1i(glGetUniformLocation(program, _name), static_cast<GLint>(value));
-    } else if constexpr (is_same_v<T, bool>) {
-        glUniform1i(glGetUniformLocation(program, _name), static_cast<GLint>(value));
-    } else if constexpr (is_same_v<T, float>){
-        glUniform1f(glGetUniformLocation(program, _name), static_cast<GLfloat>(value));
-    } else {
-        throw invalid_argument("Unsupported uniform type!");
-    }
 }
 
 void Shader::compile(const ShaderUnit &shader) {
@@ -90,7 +73,7 @@ const char *Shader::getShaderName(GLenum type) {
     }
 }
 
-GLuint Shader::getProgramID() const {
+GLuint Shader::getProgramId() const {
     return program;
 }
 

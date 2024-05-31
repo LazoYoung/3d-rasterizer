@@ -1,5 +1,4 @@
 #include "header/Window.cuh"
-#include "header/Shader.cuh"
 #include <iostream>
 #include <stdexcept>
 
@@ -14,12 +13,7 @@ int main() {
     }
 
     try {
-        Shader shader;
-        shader.add("shader/triangle.vert", GL_VERTEX_SHADER);
-        shader.add("shader/triangle.frag", GL_FRAGMENT_SHADER);
-        shader.compile();
-        shader.link();
-        window.startDrawing(shader);
+        window.startDrawing();
     } catch (std::exception &e) {
         cout << e.what() << endl;
         return EXIT_FAILURE;

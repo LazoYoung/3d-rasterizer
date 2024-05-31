@@ -1,5 +1,4 @@
 #include "header/Window.cuh"
-#include "header/Triangle.cuh"
 #include <iostream>
 
 using namespace std;
@@ -34,17 +33,26 @@ bool Window::init() {
     }
 
     glViewport(0, 0, width, height);
-    glfwSetFramebufferSizeCallback(window, onWindowResize);
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *_, int _width, int _height) {
+        glViewport(0, 0, _width, _height);
+    });
     return true;
 }
 
-void Window::startDrawing(Shader &shader) {
+void Window::startDrawing() {
+    Shader shader;
+    Scene scene(shader);
+    shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
+    shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
+    shader.compile();
+    shader.link();
+
     while (!glfwWindowShouldClose(window)) {
         processInput();
 
-        shader.use();
+        shader.useProgram();
         drawBackground();
-        Triangle::Draw();
+        scene.draw();
 
         // The front buffer represents the image being displayed
         // while all the rendering commands draw to the back buffer.
@@ -53,10 +61,6 @@ void Window::startDrawing(Shader &shader) {
         // Check if any events are triggered and update the window as necessary
         glfwPollEvents();
     }
-}
-
-void Window::onWindowResize(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
 }
 
 void Window::processInput() {
@@ -69,7 +73,3 @@ void Window::drawBackground() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-
-//Shader& Window::getShader() {
-//    return shader;
-//}
