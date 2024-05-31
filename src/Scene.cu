@@ -3,8 +3,10 @@
 Scene::Scene(const Shader &shader) : shader(shader) {}
 
 void Scene::draw() {
+    shader.useProgram();
+
     for (auto *geometry: geometries) {
-        geometry->draw(shader);
+        geometry->render(shader);
     }
 }
 

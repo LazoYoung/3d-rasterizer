@@ -2,16 +2,15 @@
 #include <glm/glm.hpp>
 
 Geometry::Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize) :
-        vertexArray(vertexArray),
-        vertexSize(vertexSize) {}
+        _vertexArray(vertexArray),
+        _vertexSize(vertexSize) {}
 
 void Geometry::bind() {
-
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertexSize, vertexArray, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, _vertexSize, _vertexArray, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 }
@@ -20,26 +19,27 @@ vec4 Geometry::getColor() {
     return {0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-void Geometry::draw(const Shader &shader) {
-    if (!isBound) {
+void Geometry::render(const Shader &shader) {
+    checkBound();
+    updateShader(shader);
+    draw();
+}
+
+void Geometry::checkBound() {
+    if (!_isBound) {
         bind();
-        isBound = true;
+        _isBound = true;
     }
+}
 
-    shader.useProgram();
-
+void Geometry::updateShader(const Shader &shader) {
     vec4 color = getColor();
+    mat4 transform = _transform.getMatrix();
+
     shader.setUniform("color", color.x, color.y, color.z, color.w);
-
-    if (transform.shouldUpdate()) {
-        shader.setUniformMatrix(glUniformMatrix4fv, "transform", false, transform.getMatrix());
-        transform.markUpdate();
-    }
-
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    shader.setUniformMatrix(glUniformMatrix4fv, "transform", false, transform);
 }
 
 Transform &Geometry::getTransform() {
-    return transform;
+    return _transform;
 }

@@ -11,7 +11,7 @@ class Transform {
 public:
     Transform();
 
-    mat4 getMatrix();
+    const mat4 & getMatrix();
 
     vec3 getPosition();
 
@@ -25,15 +25,13 @@ public:
 
     void scale(float x, float y, float z);
 
-    bool shouldUpdate() const;
-
-    void markUpdate();
-
 private:
     vec3 _position;
     vec3 _rotation;
     vec3 _scale;
-    bool _update;
+    mat4 *_matrix;
+
+    void resetCache();
 };
 
 

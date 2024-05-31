@@ -9,23 +9,29 @@ class Geometry {
 public:
     Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize);
 
-    void draw(const Shader &shader);
+    void render(const Shader &shader);
 
     Transform &getTransform();
 
-protected:
-    GLfloat *vertexArray;
-    GLsizeiptr vertexSize;
+    virtual vec4 getColor();
 
-private:
-    Transform transform;
-    bool isBound = false;
+protected:
+    GLfloat *_vertexArray;
+    GLsizeiptr _vertexSize;
     GLuint VAO = 0;
     GLuint VBO = 0;
 
-    void bind();
+    virtual void bind();
 
-    virtual vec4 getColor();
+    virtual void draw() = 0;
+
+private:
+    Transform _transform;
+    bool _isBound = false;
+
+    void checkBound();
+
+    void updateShader(const Shader &shader);
 };
 
 

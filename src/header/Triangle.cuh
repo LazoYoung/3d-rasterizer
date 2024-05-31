@@ -9,8 +9,8 @@ class Triangle : public Geometry {
 public:
     Triangle();
 
-private:
-    vec4 getColor() override;
+protected:
+    void draw() override;
 
 private:
     GLfloat array[9]{

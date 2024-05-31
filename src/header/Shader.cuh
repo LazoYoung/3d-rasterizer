@@ -76,6 +76,7 @@ public:
 
     template<typename T>
     void setUniformMatrix(const function<void(GLint, GLsizei, GLboolean, const GLfloat*)> &glFunc, const string &name, bool transpose, T matrix) const {
+        // todo: location can be cached
         auto location = glGetUniformLocation(program, name.c_str());
         auto ptr = glm::value_ptr(matrix);
 
