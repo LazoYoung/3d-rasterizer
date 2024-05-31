@@ -42,6 +42,12 @@ bool Window::init() {
 void Window::startDrawing() {
     Shader shader;
     Scene scene(shader);
+
+    auto &triangle = scene.addGeometry();
+//    triangle.getTransform().move(0.1f, 0.0f, 0.0f);
+    triangle.getTransform().rotate(0.0f, 0.0f, -90.0f);
+
+
     shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
     shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
     shader.compile();

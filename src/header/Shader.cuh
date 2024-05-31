@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -38,30 +40,30 @@ public:
     template<typename... T>
     void setUniform(const string &name, T... value) const {
         GLint location = glGetUniformLocation(program, name.c_str());
-        function < void(GLint, T...) > set;
+        function < void(GLint, T...) > glFunc;
         constexpr int count = sizeof...(T);
 
         if constexpr ((is_same_v<GLint, T> || ...) || ((is_same_v<GLboolean, T> || ...))) {
             if constexpr (count == 1) {
-                set = glUniform1i;
+                glFunc = glUniform1i;
             } else if constexpr (count == 2) {
-                set = glUniform2i;
+                glFunc = glUniform2i;
             } else if constexpr (count == 3) {
-                set = glUniform3i;
+                glFunc = glUniform3i;
             } else if constexpr (count == 4) {
-                set = glUniform4i;
+                glFunc = glUniform4i;
             } else {
                 throw invalid_argument("Too few or many arguments!");
             }
         } else if constexpr ((is_same_v<GLfloat, T> || ...)) {
             if constexpr (count == 1) {
-                set = glUniform1f;
+                glFunc = glUniform1f;
             } else if constexpr (count == 2) {
-                set = glUniform2f;
+                glFunc = glUniform2f;
             } else if constexpr (count == 3) {
-                set = glUniform3f;
+                glFunc = glUniform3f;
             } else if constexpr (count == 4) {
-                set = glUniform4f;
+                glFunc = glUniform4f;
             } else {
                 throw invalid_argument("Too few or many arguments!");
             }
@@ -69,7 +71,15 @@ public:
             throw invalid_argument("Unsupported uniform type!");
         }
 
-        set(location, value...);
+        glFunc(location, value...);
+    }
+
+    template<typename T>
+    void setUniformMatrix(const function<void(GLint, GLsizei, GLboolean, const GLfloat*)> &glFunc, const string &name, bool transpose, T matrix) const {
+        auto location = glGetUniformLocation(program, name.c_str());
+        auto ptr = glm::value_ptr(matrix);
+
+        glFunc(location, 1, transpose, ptr);
     }
 
 private:
