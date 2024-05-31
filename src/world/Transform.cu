@@ -1,4 +1,4 @@
-#include "header/Transform.cuh"
+#include "Transform.cuh"
 
 Transform::Transform() :
         _position{0.0f},

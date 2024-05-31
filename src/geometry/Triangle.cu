@@ -1,4 +1,4 @@
-#include "header/Triangle.cuh"
+#include "Triangle.cuh"
 
 Triangle::Triangle() : Geometry(array, sizeof array) {}
 

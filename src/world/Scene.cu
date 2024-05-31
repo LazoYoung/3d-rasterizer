@@ -1,4 +1,4 @@
-#include "header/Scene.cuh"
+#include "Scene.cuh"
 
 Scene::Scene(const Shader &shader) : shader(shader) {}
 

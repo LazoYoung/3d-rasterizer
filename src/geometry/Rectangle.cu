@@ -1,4 +1,4 @@
-#include "header/Rectangle.cuh"
+#include "Rectangle.cuh"
 
 Rectangle::Rectangle() : Geometry(_array, sizeof _array) {}
 

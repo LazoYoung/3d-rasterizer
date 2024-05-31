@@ -2,8 +2,8 @@
 #define GAUSSIAN_RASTERIZER_GEOMETRY_CUH
 
 
-#include "Shader.cuh"
-#include "Transform.cuh"
+#include "../Shader.cuh"
+#include "../world/Transform.cuh"
 
 class Geometry {
 public:

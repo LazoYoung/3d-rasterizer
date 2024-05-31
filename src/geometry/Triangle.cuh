@@ -3,7 +3,7 @@
 
 
 #include "Geometry.cuh"
-#include "../../include/glm/vec4.hpp"
+#include "glm/vec4.hpp"
 
 class Triangle : public Geometry {
 public:

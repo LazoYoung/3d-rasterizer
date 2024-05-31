@@ -3,10 +3,10 @@
 
 #define GLFW_DLL
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 #include "Shader.cuh"
-#include "Scene.cuh"
+#include "world/Scene.cuh"
 
 
 class Window {

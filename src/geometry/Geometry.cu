@@ -1,5 +1,5 @@
-#include "header/Geometry.cuh"
-#include <glm/glm.hpp>
+#include "Geometry.cuh"
+#include "glm/glm.hpp"
 
 Geometry::Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize) :
         _vertexArray(vertexArray),

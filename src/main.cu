@@ -1,6 +1,6 @@
-#include "header/Window.cuh"
-#include "header/Triangle.cuh"
-#include "header/Rectangle.cuh"
+#include "Window.cuh"
+#include "geometry/Triangle.cuh"
+#include "geometry/Rectangle.cuh"
 #include <iostream>
 #include <stdexcept>
 

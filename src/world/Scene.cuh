@@ -2,7 +2,7 @@
 #define GAUSSIAN_RASTERIZER_SCENE_CUH
 
 
-#include "Geometry.cuh"
+#include "../geometry/Geometry.cuh"
 
 class Scene {
 public:

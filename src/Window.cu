@@ -1,5 +1,4 @@
-#include "header/Window.cuh"
-#include "header/Triangle.cuh"
+#include "Window.cuh"
 #include <iostream>
 
 using namespace std;
