@@ -9,12 +9,17 @@ https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e34
 4. Place the folders under the project root
 
 ### Install GLAD
-1. Download [glad.zip](https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on) from GLAD load generator.
+1. Download [glad.zip](https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on) from GLAD load generator
 2. Unzip the file to extract `include` and `src` folders
 3. Place them under the project root
 
+### Install GLM
+1. Download [glm-light.zip](https://github.com/g-truc/glm/releases)
+2. Unzip the file to extract `glm` folder
+3. Place it inside `include` under the project root 
+
 ### Project Structure
-<img src="resources/project_structure.png" alt="drawing" width="360"/>
+<img src="resources/project_structure.png" alt="drawing" width="300"/>
 
 ### Build project
 1. Run CMake to build the project
