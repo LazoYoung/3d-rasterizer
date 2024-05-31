@@ -17,7 +17,7 @@ public:
 
     bool init();
 
-    void startDrawing();
+    void startDrawing(Scene &scene);
 
 private:
     int width;

@@ -7,17 +7,25 @@
 
 class Geometry {
 public:
-    explicit Geometry(const Shader &shader);
+    Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize);
 
-    void draw();
+    void draw(const Shader &shader);
 
     Transform &getTransform();
 
+protected:
+    GLfloat *vertexArray;
+    GLsizeiptr vertexSize;
+
 private:
     Transform transform;
-    Shader shader;
+    bool isBound = false;
     GLuint VAO = 0;
     GLuint VBO = 0;
+
+    void bind();
+
+    virtual vec4 getColor();
 };
 
 

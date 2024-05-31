@@ -3,11 +3,11 @@
 Scene::Scene(const Shader &shader) : shader(shader) {}
 
 void Scene::draw() {
-    for (auto &geometry: geometries) {
-        geometry.draw();
+    for (auto *geometry: geometries) {
+        geometry->draw(shader);
     }
 }
 
-Geometry &Scene::addGeometry() {
-    return geometries.emplace_back(shader);
+void Scene::add(Geometry *geometry) {
+    geometries.push_back(geometry);
 }

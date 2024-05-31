@@ -10,11 +10,11 @@ public:
 
     void draw();
 
-    Geometry &addGeometry();
+    void add(Geometry *geometry);
 
 private:
     Shader shader;
-    vector<Geometry> geometries;
+    vector<Geometry*> geometries;
 };
 
 
