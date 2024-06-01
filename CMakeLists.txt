@@ -60,3 +60,6 @@ add_custom_target(CopyShaders ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SOURCE_DIR} ${SHADER_DEST_DIR}
 )
 add_dependencies(gaussian_rasterizer CopyShaders)
+
+# Suppress warnings
+target_compile_options(gaussian_rasterizer PUBLIC -w)
