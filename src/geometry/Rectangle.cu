@@ -18,5 +18,5 @@ void Rectangle::bind() {
 
 void Rectangle::draw() {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, _count, GL_UNSIGNED_INT, nullptr);
 }

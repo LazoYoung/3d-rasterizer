@@ -15,19 +15,33 @@ public:
 
     ~Window();
 
-    bool init();
+    bool init(Scene *scene);
 
-    void startDrawing(Scene &scene);
+    void startDrawing();
 
 private:
-    int width;
-    int height;
-    const char *title;
-    GLFWwindow *window;
+    int _width;
+    int _height;
+    const char *_title;
+    GLFWwindow *_window;
+    float _lastTime;
+    float _deltaTime;
+    double _lastMouseX;
+    double _lastMouseY;
+    bool _pan = false;
+    Scene *_scene = nullptr;
 
-    void processInput();
+    void processInput(Camera &camera);
+
+    bool isPressed(int key);
 
     static void drawBackground();
+
+    void updateTime();
+
+    static void onCursorMove(GLFWwindow *window, double posX, double posY);
+
+    static void setViewport(GLsizei width, GLsizei height);
 };
 
 

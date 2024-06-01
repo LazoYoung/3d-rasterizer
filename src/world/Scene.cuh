@@ -9,20 +9,22 @@ class Geometry;
 
 class Scene {
 public:
-    explicit Scene(const Shader &shader);
-
     void draw();
 
     void add(Geometry *geometry);
 
-    Shader &getShader();
+    void add(initializer_list<Geometry *> list);
 
     Camera &getCamera();
 
+    Shader *getShader();
+
+    void setShader(Shader *shader);
+
 private:
-    Shader shader;
-    Camera camera;
-    vector<Geometry*> geometries;
+    Camera _camera;
+    vector<Geometry *> _geometries;
+    Shader *_shader = nullptr;
 };
 
 

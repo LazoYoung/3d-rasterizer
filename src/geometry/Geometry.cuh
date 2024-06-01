@@ -10,7 +10,7 @@ class Scene;
 
 class Geometry {
 public:
-    Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize);
+    Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize);
 
     void render(Scene *scene);
 
@@ -21,7 +21,7 @@ public:
     virtual vec4 getColor();
 
 protected:
-    GLfloat *_vertexArray;
+    const GLfloat *_vertexArray;
     GLsizeiptr _vertexSize;
     GLuint VAO = 0;
     GLuint VBO = 0;

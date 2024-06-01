@@ -1,7 +1,7 @@
 #include "Geometry.cuh"
 #include "glm/glm.hpp"
 
-Geometry::Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize) :
+Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize) :
         _vertexArray(vertexArray),
         _vertexSize(vertexSize) {
     _transform.setUpdateCallback([this] { resetModel(); });
@@ -20,7 +20,7 @@ void Geometry::bind() {
 }
 
 vec4 Geometry::getColor() {
-    return {0.0f, 0.0f, 0.0f, 1.0f};
+    return {1.0f, 1.0f, 1.0f, 1.0f};
 }
 
 void Geometry::render(Scene *scene) {
@@ -30,17 +30,17 @@ void Geometry::render(Scene *scene) {
 }
 
 void Geometry::updateShader(Scene *scene) {
-    auto &shader = scene->getShader();
+    auto *shader = scene->getShader();
     auto &camera = scene->getCamera();
     auto color = getColor();
     auto &model = getModel();
     auto &view = camera.getView();
     auto &projection = camera.getProjection();
 
-    shader.setUniform("color", color.x, color.y, color.z, color.w);
-    shader.setUniformMatrix(glUniformMatrix4fv, "model", false, model);
-    shader.setUniformMatrix(glUniformMatrix4fv, "view", false, view);
-    shader.setUniformMatrix(glUniformMatrix4fv, "projection", false, projection);
+    shader->setUniform("color", color.x, color.y, color.z, color.w);
+    shader->setUniformMatrix(glUniformMatrix4fv, "model", false, model);
+    shader->setUniformMatrix(glUniformMatrix4fv, "view", false, view);
+    shader->setUniformMatrix(glUniformMatrix4fv, "projection", false, projection);
 }
 
 Transform &Geometry::getTransform() {

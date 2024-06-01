@@ -15,13 +15,14 @@ protected:
     void draw() override;
 
 private:
-    GLfloat _array[12]{
+    static const GLsizei _count = 6;
+    constexpr static const GLfloat _array[12]{
             -0.1f, 0.1f, 0.0f,
             0.1f, 0.1f, 0.0f,
             0.1f, -0.1f, 0.0f,
             -0.1f, -0.1f, 0.0f
     };
-    GLint _indices[6]{
+    constexpr static const GLint _indices[_count]{
         0, 1, 2,
         2, 3, 0
     };
