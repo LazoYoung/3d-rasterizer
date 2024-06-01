@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(gaussian_rasterizer CUDA C)
+project(3d_rasterizer CUDA C)
 
 file(GLOB_RECURSE SOURCE_FILES
         "${CMAKE_SOURCE_DIR}/src/*.cpp"
@@ -16,15 +16,15 @@ file(GLOB_RECURSE DLL_FILES
 )
 
 # Supply source files to produce executable
-add_executable(gaussian_rasterizer ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(3d_rasterizer ${SOURCE_FILES} ${HEADER_FILES})
 
 set(DEPLOY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/deploy")
-set_property(TARGET gaussian_rasterizer PROPERTY CUDA_STANDARD 17)
-set_property(TARGET gaussian_rasterizer PROPERTY CUDA_SEPARABLE_COMPILATION ON)
-set_property(TARGET gaussian_rasterizer PROPERTY RUNTIME_OUTPUT_DIRECTORY ${DEPLOY_DIRECTORY})
+set_property(TARGET 3d_rasterizer PROPERTY CUDA_STANDARD 17)
+set_property(TARGET 3d_rasterizer PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+set_property(TARGET 3d_rasterizer PROPERTY RUNTIME_OUTPUT_DIRECTORY ${DEPLOY_DIRECTORY})
 
 # OpenGL
-set_property(TARGET gaussian_rasterizer PROPERTY OpenGL_GL_PREFERENCE GLVND)
+set_property(TARGET 3d_rasterizer PROPERTY OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
 # GLFW
@@ -40,15 +40,15 @@ add_library(glad STATIC "${CMAKE_SOURCE_DIR}/src/glad.c")
 
 # Include directories
 target_include_directories(glad PUBLIC "${CMAKE_SOURCE_DIR}/include")
-target_include_directories(gaussian_rasterizer PUBLIC "${CMAKE_SOURCE_DIR}/include")
+target_include_directories(3d_rasterizer PUBLIC "${CMAKE_SOURCE_DIR}/include")
 
 # Linking
-target_link_libraries(gaussian_rasterizer PUBLIC OpenGL::GL glfw3 glfw3_mt glfw3dll glad)
+target_link_libraries(3d_rasterizer PUBLIC OpenGL::GL glfw3 glfw3_mt glfw3dll glad)
 
 # Copy DLL
 add_custom_command(
-        TARGET gaussian_rasterizer POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL_FILES} $<TARGET_FILE_DIR:gaussian_rasterizer>
+        TARGET 3d_rasterizer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL_FILES} $<TARGET_FILE_DIR:3d_rasterizer>
 )
 
 # Copy shader files
@@ -59,7 +59,7 @@ add_custom_target(CopyShaders ALL
         COMMAND ${CMAKE_COMMAND} -E echo "Copying GLSL files..."
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SOURCE_DIR} ${SHADER_DEST_DIR}
 )
-add_dependencies(gaussian_rasterizer CopyShaders)
+add_dependencies(3d_rasterizer CopyShaders)
 
 # Suppress warnings
-target_compile_options(gaussian_rasterizer PUBLIC -w)
+target_compile_options(3d_rasterizer PUBLIC -w)

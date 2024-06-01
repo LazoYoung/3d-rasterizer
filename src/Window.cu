@@ -69,6 +69,10 @@ void Window::startDrawing() {
 
         // Check if any events are triggered and update the window as necessary
         glfwPollEvents();
+
+        // Update profiler every frame
+        _profiler.updateFrameRate();
+        cout << "FPS: " << _profiler.getFramesPerSecond() << endl;
     }
 }
 

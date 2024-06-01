@@ -6,6 +6,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Shader.cuh"
+#include "Profiler.cuh"
 #include "world/Scene.cuh"
 
 
@@ -24,6 +25,7 @@ private:
     int _height;
     const char *_title;
     GLFWwindow *_window;
+    Profiler _profiler;
     float _lastTime;
     float _deltaTime;
     double _lastMouseX;
