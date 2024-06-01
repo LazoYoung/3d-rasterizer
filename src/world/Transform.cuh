@@ -18,11 +18,11 @@ public:
 
     const vec3 &getScale();
 
-    void move(float x, float y, float z);
+    void setPosition(float x, float y, float z);
 
-    void rotate(float x, float y, float z);
+    void setRotation(float x, float y, float z);
 
-    void scale(float x, float y, float z);
+    void setScale(float x, float y, float z);
 
     void setUpdateCallback(const std::function<void()>& callback);
 

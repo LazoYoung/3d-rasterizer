@@ -9,38 +9,36 @@ using namespace std;
 
 int main() {
     Window window(800, 600, "Gaussian Rasterizer");
-
-    if (!window.init()) {
-        cout << "Failed to checkBound window!" << endl;
-        return EXIT_FAILURE;
-    }
-
     auto *triangle = new Triangle();
-    auto &t1 = triangle->getTransform();
-    t1.move(0.2f, 0.0f, 0.0f);
-    t1.rotate(-55.0f, 0.0f, 0.0f);
-
     auto *rectangle = new Rectangle();
-    auto &t2 = rectangle->getTransform();
-    t2.move(0.1f, 0.0f, -1.0f);
-    t2.rotate(30.0f, 0.0f, 0.0f);
-
     auto *cube = new Cube();
+    auto &t1 = triangle->getTransform();
+    auto &t2 = rectangle->getTransform();
     auto &t3 = cube->getTransform();
-    t3.move(-0.2f, 0.1f, 0.0f);
-    t3.rotate(30.0f, 30.0f, 0.0f);
+    t1.setPosition(0.2f, 0.0f, 0.0f);
+    t1.setRotation(-55.0f, 0.0f, 0.0f);
+    t2.setPosition(0.1f, 0.0f, -1.0f);
+    t2.setRotation(30.0f, 0.0f, 0.0f);
+    t3.setPosition(-0.2f, 0.1f, 0.0f);
+    t3.setRotation(30.0f, 30.0f, 0.0f);
 
     try {
+        Scene scene;
+        scene.add({triangle, rectangle, cube});
+
+        if (!window.init(&scene)) {
+            cout << "Failed to checkBound window!" << endl;
+            return EXIT_FAILURE;
+        }
+
         Shader shader;
         shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
         shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();
         shader.link();
 
-        Scene scene(shader);
-        scene.add({triangle, rectangle, cube});
-
-        window.startDrawing(scene);
+        scene.setShader(&shader);
+        window.startDrawing();
     } catch (std::exception &e) {
         cout << e.what() << endl;
         return EXIT_FAILURE;

@@ -19,7 +19,7 @@ https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e34
 3. Place it inside `include` under the project root 
 
 ### Project Structure
-<img src="resources/project_structure.png" alt="drawing" width="300"/>
+<img src="resources/project_structure.png" alt="drawing" _width="300"/>
 
 ### Build project
 1. Run CMake to build the project

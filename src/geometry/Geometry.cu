@@ -30,17 +30,17 @@ void Geometry::render(Scene *scene) {
 }
 
 void Geometry::updateShader(Scene *scene) {
-    auto &shader = scene->getShader();
+    auto *shader = scene->getShader();
     auto &camera = scene->getCamera();
     auto color = getColor();
     auto &model = getModel();
     auto &view = camera.getView();
     auto &projection = camera.getProjection();
 
-    shader.setUniform("color", color.x, color.y, color.z, color.w);
-    shader.setUniformMatrix(glUniformMatrix4fv, "model", false, model);
-    shader.setUniformMatrix(glUniformMatrix4fv, "view", false, view);
-    shader.setUniformMatrix(glUniformMatrix4fv, "projection", false, projection);
+    shader->setUniform("color", color.x, color.y, color.z, color.w);
+    shader->setUniformMatrix(glUniformMatrix4fv, "model", false, model);
+    shader->setUniformMatrix(glUniformMatrix4fv, "view", false, view);
+    shader->setUniformMatrix(glUniformMatrix4fv, "projection", false, projection);
 }
 
 Transform &Geometry::getTransform() {

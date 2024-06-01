@@ -1,29 +1,35 @@
 #include "Scene.cuh"
 
-Scene::Scene(const Shader &shader) : shader(shader) {}
-
 void Scene::draw() {
-    shader.useProgram();
+    if (!_shader) {
+        throw runtime_error("Shader is null!");
+    }
 
-    for (auto *geometry: geometries) {
+    _shader->useProgram();
+
+    for (auto *geometry: _geometries) {
         geometry->render(this);
     }
 }
 
 void Scene::add(Geometry *geometry) {
-    geometries.push_back(geometry);
+    _geometries.push_back(geometry);
 }
 
-void Scene::add(initializer_list<Geometry*> list) {
+void Scene::add(initializer_list<Geometry *> list) {
     for (auto ptr: list) {
         add(ptr);
     }
 }
 
-Shader &Scene::getShader() {
-    return shader;
+Shader *Scene::getShader() {
+    return _shader;
 }
 
 Camera &Scene::getCamera() {
-    return camera;
+    return _camera;
+}
+
+void Scene::setShader(Shader *shader) {
+    _shader = shader;
 }

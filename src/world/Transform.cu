@@ -17,21 +17,21 @@ const vec3 &Transform::getScale() {
     return _scale;
 }
 
-void Transform::move(float x, float y, float z) {
+void Transform::setPosition(float x, float y, float z) {
     _position.x = x;
     _position.y = y;
     _position.z = z;
     notify();
 }
 
-void Transform::rotate(float x, float y, float z) {
+void Transform::setRotation(float x, float y, float z) {
     _rotation.x = x;
     _rotation.y = y;
     _rotation.z = z;
     notify();
 }
 
-void Transform::scale(float x, float y, float z) {
+void Transform::setScale(float x, float y, float z) {
     _scale.x = x;
     _scale.y = y;
     _scale.z = z;
