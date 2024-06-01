@@ -2,7 +2,10 @@
 #define GAUSSIAN_RASTERIZER_SCENE_CUH
 
 
-#include "Geometry.cuh"
+#include "../geometry/Geometry.cuh"
+#include "Camera.cuh"
+
+class Geometry;
 
 class Scene {
 public:
@@ -12,8 +15,13 @@ public:
 
     void add(Geometry *geometry);
 
+    Shader &getShader();
+
+    Camera &getCamera();
+
 private:
     Shader shader;
+    Camera camera;
     vector<Geometry*> geometries;
 };
 

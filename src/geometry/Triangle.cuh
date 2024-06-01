@@ -3,14 +3,14 @@
 
 
 #include "Geometry.cuh"
-#include "../../include/glm/vec4.hpp"
+#include "glm/vec4.hpp"
 
 class Triangle : public Geometry {
 public:
     Triangle();
 
-private:
-    vec4 getColor() override;
+protected:
+    void draw() override;
 
 private:
     GLfloat array[9]{

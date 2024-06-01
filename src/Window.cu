@@ -1,5 +1,4 @@
-#include "header/Window.cuh"
-#include "header/Triangle.cuh"
+#include "Window.cuh"
 #include <iostream>
 
 using namespace std;
@@ -66,5 +65,5 @@ void Window::processInput() {
 
 void Window::drawBackground() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

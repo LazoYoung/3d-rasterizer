@@ -1,4 +1,4 @@
-#include "header/Shader.cuh"
+#include "Shader.cuh"
 #include <fstream>
 #include <sstream>
 
