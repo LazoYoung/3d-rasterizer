@@ -1,6 +1,7 @@
 #include "Window.cuh"
 #include "geometry/Triangle.cuh"
 #include "geometry/Rectangle.cuh"
+#include "geometry/Cube.cuh"
 #include <iostream>
 #include <stdexcept>
 
@@ -14,19 +15,20 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    auto *triangle1 = new Triangle();
-    auto &t1 = triangle1->getTransform();
-    t1.move(0.1f, 0.0f, 0.0f);
+    auto *triangle = new Triangle();
+    auto &t1 = triangle->getTransform();
+    t1.move(0.2f, 0.0f, 0.0f);
     t1.rotate(-55.0f, 0.0f, 0.0f);
 
     auto *rectangle = new Rectangle();
     auto &t2 = rectangle->getTransform();
-    t2.move(-0.3f, 0.0f, 0.0f);
+    t2.move(0.1f, 0.0f, -1.0f);
     t2.rotate(30.0f, 0.0f, 0.0f);
 
-    auto *triangle2 = new Triangle();
-    auto &t3 = triangle2->getTransform();
-    t3.move(0.3f, 0.0f, 0.0f);
+    auto *cube = new Cube();
+    auto &t3 = cube->getTransform();
+    t3.move(-0.2f, 0.1f, 0.0f);
+    t3.rotate(30.0f, 30.0f, 0.0f);
 
     try {
         Shader shader;
@@ -36,9 +38,7 @@ int main() {
         shader.link();
 
         Scene scene(shader);
-        scene.add(triangle1);
-        scene.add(triangle2);
-        scene.add(rectangle);
+        scene.add({triangle, rectangle, cube});
 
         window.startDrawing(scene);
     } catch (std::exception &e) {
@@ -46,9 +46,9 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    free(triangle1);
+    free(triangle);
     free(rectangle);
-    free(triangle2);
+    free(cube);
 
     return 0;
 }

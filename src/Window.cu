@@ -32,10 +32,12 @@ bool Window::init() {
         return false;
     }
 
+    glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *_, int _width, int _height) {
         glViewport(0, 0, _width, _height);
     });
+
     return true;
 }
 

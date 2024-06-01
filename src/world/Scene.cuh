@@ -15,6 +15,8 @@ public:
 
     void add(Geometry *geometry);
 
+    void add(initializer_list<Geometry*> list);
+
     Shader &getShader();
 
     Camera &getCamera();

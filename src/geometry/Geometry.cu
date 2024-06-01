@@ -1,7 +1,7 @@
 #include "Geometry.cuh"
 #include "glm/glm.hpp"
 
-Geometry::Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize) :
+Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize) :
         _vertexArray(vertexArray),
         _vertexSize(vertexSize) {
     _transform.setUpdateCallback([this] { resetModel(); });
@@ -20,7 +20,7 @@ void Geometry::bind() {
 }
 
 vec4 Geometry::getColor() {
-    return {0.0f, 0.0f, 0.0f, 1.0f};
+    return {1.0f, 1.0f, 1.0f, 1.0f};
 }
 
 void Geometry::render(Scene *scene) {
