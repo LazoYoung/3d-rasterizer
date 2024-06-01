@@ -10,17 +10,19 @@ int main() {
     Window window(800, 600, "Gaussian Rasterizer");
 
     if (!window.init()) {
-        cout << "Failed to init window!" << endl;
+        cout << "Failed to checkBound window!" << endl;
         return EXIT_FAILURE;
     }
 
     auto *triangle1 = new Triangle();
     auto &t1 = triangle1->getTransform();
     t1.move(0.1f, 0.0f, 0.0f);
+    t1.rotate(-55.0f, 0.0f, 0.0f);
 
     auto *rectangle = new Rectangle();
     auto &t2 = rectangle->getTransform();
     t2.move(-0.3f, 0.0f, 0.0f);
+    t2.rotate(30.0f, 0.0f, 0.0f);
 
     auto *triangle2 = new Triangle();
     auto &t3 = triangle2->getTransform();

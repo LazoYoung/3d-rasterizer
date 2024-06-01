@@ -4,14 +4,19 @@
 
 #include "../Shader.cuh"
 #include "../world/Transform.cuh"
+#include "../world/Scene.cuh"
+
+class Scene;
 
 class Geometry {
 public:
     Geometry(GLfloat *vertexArray, GLsizeiptr vertexSize);
 
-    void render(const Shader &shader);
+    void render(Scene *scene);
 
     Transform &getTransform();
+
+    mat4 &getModel();
 
     virtual vec4 getColor();
 
@@ -28,10 +33,11 @@ protected:
 private:
     Transform _transform;
     bool _isBound = false;
+    mat4 *_model = nullptr;
 
-    void checkBound();
+    void resetModel();
 
-    void updateShader(const Shader &shader);
+    void updateShader(Scene *scene);
 };
 
 
