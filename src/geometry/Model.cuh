@@ -3,12 +3,12 @@
 
 
 #include "Geometry.cuh"
-#include "VertexSet.cuh"
-#include "FaceSet.cuh"
+#include "ModelVertex.cuh"
+#include "ModelFace.cuh"
 
 class Model : public Geometry {
 public:
-    Model(VertexSet *vert, FaceSet *face);
+    Model(ModelVertex *vert, ModelFace *face);
 
     ~Model();
 
@@ -19,8 +19,8 @@ protected:
 
 private:
     GLuint EBO = 0;
-    VertexSet *_vertexSet;
-    FaceSet *_faceSet;
+    ModelVertex *_vertex;
+    ModelFace *_face;
 };
 
 

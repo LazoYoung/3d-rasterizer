@@ -1,6 +1,6 @@
 #include "Triangle.cuh"
 
-Triangle::Triangle() : Geometry(array, sizeof array) {}
+Triangle::Triangle() : Geometry(_array, sizeof _array, 3) {}
 
 void Triangle::draw() {
     glBindVertexArray(VAO);

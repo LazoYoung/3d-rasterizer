@@ -13,7 +13,7 @@ protected:
     void draw() override;
 
 private:
-    GLfloat array[9]{
+    constexpr static const GLfloat _array[9]{
             -0.1f, -0.1f, 0.0f,
             0.1f, -0.1f, 0.0f,
             0.0f, 0.1f, 0.0f

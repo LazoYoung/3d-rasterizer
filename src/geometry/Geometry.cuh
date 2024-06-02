@@ -5,12 +5,13 @@
 #include "../Shader.cuh"
 #include "../world/Transform.cuh"
 #include "../world/Scene.cuh"
+#include "../world/Camera.cuh"
 
 class Scene;
 
 class Geometry {
 public:
-    Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize);
+    Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei vertexCount);
 
     void render(Scene *scene);
 
@@ -21,10 +22,12 @@ public:
     virtual vec4 getColor();
 
 protected:
-    const GLfloat *_vertexArray;
-    GLsizeiptr _vertexSize;
+    const GLfloat *vertexArray;
+    GLsizeiptr vertexSize;
+    GLsizei vertexCount;
     GLuint VAO = 0;
     GLuint VBO = 0;
+    float *cudaVertexArray = nullptr;
 
     virtual void bind();
 
@@ -38,6 +41,14 @@ private:
     void resetModel();
 
     void updateShader(Scene *scene);
+
+    void processVertex(Scene *scene);
+
+    void processVertexOpenMP(Scene *scene);
+
+    void processVertexCuda(Scene *scene);
+
+    static void cudaCheckError(cudaError_t err);
 };
 
 

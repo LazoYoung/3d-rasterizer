@@ -9,6 +9,7 @@ void Text::setProjection(int width, int height) {
 }
 
 void Text::init(const char *fontPath, Window *window) {
+    _window = window;
     _shader = new Shader();
     _shader->add("shader/text.vert", GL_VERTEX_SHADER);
     _shader->add("shader/text.frag", GL_FRAGMENT_SHADER);
@@ -50,7 +51,7 @@ void Text::init(const char *fontPath, Window *window) {
     bind();
 }
 
-void Text::render(string text, float x, float y, int fontSize, vec3 color) {
+void Text::render(string text, int fontSize, vec3 color, vec2 position, TextLayout layout) {
     if (!_shader) {
         throw runtime_error("Shader is null!");
     }
@@ -61,12 +62,13 @@ void Text::render(string text, float x, float y, int fontSize, vec3 color) {
     glBindVertexArray(VAO);
 
     float scale = static_cast<float>(fontSize) / static_cast<float>(_pixelHeight);
+    mapTextPosition(position, layout);
 
     for (auto c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];
 
-        float xPos = x + ch.bearing.x * scale;
-        float yPos = y - (ch.size.y - ch.bearing.y) * scale;
+        float xPos = position.x + ch.bearing.x * scale;
+        float yPos = position.y - (ch.size.y - ch.bearing.y) * scale;
 
         float w = ch.size.x * scale;
         float h = ch.size.y * scale;
@@ -90,7 +92,7 @@ void Text::render(string text, float x, float y, int fontSize, vec3 color) {
 
         // Advance cursors for next glyph
         // Bitshift by 6 to get value in pixels (2^6 = 64)
-        x += static_cast<float>(ch.advance >> 6) * scale;
+        position.x += static_cast<float>(ch.advance >> 6) * scale;
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -140,6 +142,29 @@ void Text::createCharacter(unsigned char c) {
     };
 
     _characters.insert(std::pair<char, Character>(c, character));
+}
+
+void Text::mapTextPosition(vec2 &pos, TextLayout layout) {
+    if (!_window) {
+        return;
+    }
+
+    vec2 dim = _window->getDimension();
+
+    switch (layout) {
+        case bottomLeft:
+            break;
+        case bottomRight:
+            pos.x = dim.x - pos.x;
+            break;
+        case topLeft:
+            pos.y = dim.y - pos.y;
+            break;
+        case topRight:
+            pos.x = dim.x - pos.x;
+            pos.y = dim.y - pos.y;
+            break;
+    }
 }
 
 Text::~Text() {

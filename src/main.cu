@@ -16,19 +16,19 @@ int main() {
     auto &t1 = triangle->getTransform();
     auto &t2 = rectangle->getTransform();
     auto &t3 = cube->getTransform();
-    t1.setPosition(0.2f, 0.0f, 0.0f);
+    t1.setPosition(-0.5f, 0.5f, 1.0f);
     t1.setRotation(-55.0f, 0.0f, 0.0f);
-    t2.setPosition(0.1f, 0.0f, -1.0f);
+    t2.setPosition(1.5f, 1.0f, -1.0f);
     t2.setRotation(30.0f, 0.0f, 0.0f);
-    t3.setPosition(-0.2f, 0.1f, 0.0f);
+    t3.setPosition(-1.0f, 0.1f, 1.0f);
     t3.setRotation(30.0f, 30.0f, 0.0f);
 
     try {
         Model model = PlyLoader::importModel("model/teapot.ply");
         model.getTransform().setScale(0.2f, 0.2f, 0.2f);
+        model.getTransform().setRotation(-90.0f, 0.0f, 0.0f);
 
         Scene scene;
-//        scene.add(&model);
         scene.add({triangle, rectangle, cube, &model});
 
         if (!window.init(&scene)) {
@@ -36,7 +36,7 @@ int main() {
             return EXIT_FAILURE;
         }
 
-        Shader shader;
+        Shader shader(CUDA);
         shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
         shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();

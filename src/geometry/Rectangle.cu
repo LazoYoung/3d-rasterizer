@@ -1,6 +1,6 @@
 #include "Rectangle.cuh"
 
-Rectangle::Rectangle() : Geometry(_array, sizeof _array) {}
+Rectangle::Rectangle() : Geometry(_array, sizeof _array, _count) {}
 
 vec4 Rectangle::getColor() {
     auto time = static_cast<float>(glfwGetTime());

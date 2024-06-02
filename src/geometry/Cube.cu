@@ -1,6 +1,6 @@
 #include "Cube.cuh"
 
-Cube::Cube() : Geometry(_array, sizeof _array) {}
+Cube::Cube() : Geometry(_array, sizeof _array, _count) {}
 
 void Cube::bind() {
     Geometry::bind();

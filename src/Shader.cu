@@ -2,13 +2,14 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader() {
-    program = glCreateProgram();
+Shader::Shader(Pipeline pipeline) {
+    _pipeline = pipeline;
+    _programId = glCreateProgram();
 }
 
 // todo: is this right place to delete shaders?
 Shader::~Shader() {
-    for (const ShaderUnit &unit: units) {
+    for (const ShaderUnit &unit: _units) {
         glDeleteShader(unit.id);
     }
 }
@@ -19,29 +20,29 @@ void Shader::add(const char *path, GLenum type) {
     auto source = source_str.c_str();
     ShaderUnit unit{type, id};
     glShaderSource(id, 1, &source, nullptr);
-    units.push_back(unit);
+    _units.push_back(unit);
 }
 
 void Shader::compile() {
-    for (const ShaderUnit &unit: units) {
+    for (const ShaderUnit &unit: _units) {
         Shader::compile(unit);
     }
 }
 
 void Shader::link() const {
-    for (const ShaderUnit &unit: units) {
-        glAttachShader(program, unit.id);
+    for (const ShaderUnit &unit: _units) {
+        glAttachShader(_programId, unit.id);
     }
 
-    glLinkProgram(program);
+    glLinkProgram(_programId);
 
-    for (const ShaderUnit &unit: units) {
+    for (const ShaderUnit &unit: _units) {
         glDeleteShader(unit.id);
     }
 }
 
 void Shader::useProgram() const {
-    glUseProgram(program);
+    glUseProgram(_programId);
 }
 
 void Shader::compile(const ShaderUnit &shader) {
@@ -74,7 +75,7 @@ const char *Shader::getShaderName(GLenum type) {
 }
 
 GLuint Shader::getProgramId() const {
-    return program;
+    return _programId;
 }
 
 string Shader::getSource(const char *path) {
@@ -95,4 +96,12 @@ string Shader::getSource(const char *path) {
     }
 
     return src;
+}
+
+Pipeline Shader::getPipeline() {
+    return _pipeline;
+}
+
+void Shader::setPipeline(Pipeline pipeline) {
+    _pipeline = pipeline;
 }

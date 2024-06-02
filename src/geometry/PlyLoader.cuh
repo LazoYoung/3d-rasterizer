@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 #include "Model.cuh"
-#include "VertexSet.cuh"
-#include "FaceSet.cuh"
+#include "ModelVertex.cuh"
+#include "ModelFace.cuh"
 
 using namespace std;
 
@@ -16,13 +16,13 @@ public:
     static Model importModel(const char *filePath, bool verbose = false);
 
 private:
-    static void readPlyFile(const char *path, VertexSet &vertexSet, FaceSet &faceSet, bool verbose);
+    static void readPlyFile(const char *path, ModelVertex &vert, ModelFace &face, bool verbose);
 
-    static void processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &faceSet);
+    static void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face);
 
-    static void processVertex(ifstream &file, VertexSet &vertexSet, bool verbose);
+    static void processVertex(ifstream &file, ModelVertex &vert, bool verbose);
 
-    static void processFace(ifstream &file, FaceSet &faceSet, bool verbose);
+    static void processFace(ifstream &file, ModelFace &face, bool verbose);
 
     static int getVertexPerFace(ifstream &file);
 };

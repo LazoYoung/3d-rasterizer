@@ -6,14 +6,14 @@
 #include <iostream>
 
 Model PlyLoader::importModel(const char *filePath, bool verbose) {
-    auto *vertexSet = new VertexSet();
-    auto *faceSet = new FaceSet();
+    auto *vertexSet = new ModelVertex();
+    auto *faceSet = new ModelFace();
 
     readPlyFile(filePath, *vertexSet, *faceSet, verbose);
     return {vertexSet, faceSet};
 }
 
-void PlyLoader::readPlyFile(const char *path, VertexSet &vertexSet, FaceSet &faceSet, bool verbose) {
+void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face, bool verbose) {
     ifstream file(path);
 
     if (!file.is_open()) {
@@ -22,20 +22,20 @@ void PlyLoader::readPlyFile(const char *path, VertexSet &vertexSet, FaceSet &fac
 
     cout << "Loading model: " << path << '\n';
 
-    processHeader(file, vertexSet, faceSet);
-    processVertex(file, vertexSet, verbose);
-    processFace(file, faceSet, verbose);
+    processHeader(file, vert, face);
+    processVertex(file, vert, verbose);
+    processFace(file, face, verbose);
 
-    cout << "Found " << vertexSet.count << " vertex points and " << faceSet.count << " meshes." << endl;
+    cout << "Found " << vert.count << " vertex points and " << face.count << " meshes." << endl;
 }
 
-void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose) {
+void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool verbose) {
     string line;
     int vertexIdx = 0;
-    int keyCount = static_cast<int>(vertexSet.keys.size());
-    vertexSet.arrayCount = vertexSet.count * keyCount;
-    vertexSet.arraySize = vertexSet.arrayCount * sizeof(GLfloat);
-    vertexSet.vertices = new GLfloat [vertexSet.arrayCount];
+    int keyCount = static_cast<int>(vert.keys.size());
+    vert.arrayCount = vert.count * keyCount;
+    vert.arraySize = vert.arrayCount * sizeof(GLfloat);
+    vert.vertices = new GLfloat [vert.arrayCount];
 
     while (getline(file, line)) {
         istringstream stream(line);
@@ -43,7 +43,7 @@ void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose
         for (int i = 0; i < keyCount; ++i) {
             GLfloat vertex;
             stream >> vertex;
-            vertexSet.vertices[vertexIdx * keyCount + i] = vertex;
+            vert.vertices[vertexIdx * keyCount + i] = vertex;
 
             if (verbose) {
                 cout << vertex << ' ';
@@ -54,19 +54,19 @@ void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose
             cout << endl;
         }
 
-        if (++vertexIdx >= vertexSet.count) {
+        if (++vertexIdx >= vert.count) {
             break;
         }
     }
 }
 
-void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
+void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
     string line;
     int faceIdx = 0;
-    faceSet.vertexPerFace = getVertexPerFace(file);
-    faceSet.arrayCount = faceSet.count * faceSet.vertexPerFace;
-    faceSet.arraySize = faceSet.arrayCount * sizeof(GLfloat);
-    faceSet.indices = new GLuint [faceSet.arrayCount];
+    face.vertexPerFace = getVertexPerFace(file);
+    face.arrayCount = face.count * face.vertexPerFace;
+    face.arraySize = face.arrayCount * sizeof(GLfloat);
+    face.indices = new GLuint [face.arrayCount];
     bool firstLine = true;
 
     while (getline(file, line)) {
@@ -76,7 +76,7 @@ void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
         if (!firstLine) {
             stream >> firstToken;
 
-            if (stoi(firstToken) != faceSet.vertexPerFace) {
+            if (stoi(firstToken) != face.vertexPerFace) {
                 throw runtime_error("Inconsistent vertex indices!");
             }
         }
@@ -87,10 +87,10 @@ void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
             cout << firstToken << ' ';
         }
 
-        for (int i = 0; i < faceSet.vertexPerFace; ++i) {
+        for (int i = 0; i < face.vertexPerFace; ++i) {
             int vertexIndex;
             stream >> vertexIndex;
-            faceSet.indices[faceIdx * faceSet.vertexPerFace + i] = vertexIndex;
+            face.indices[faceIdx * face.vertexPerFace + i] = vertexIndex;
 
             if (verbose) {
                 cout << vertexIndex << ' ';
@@ -101,13 +101,13 @@ void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
             cout << '\n';
         }
 
-        if (++faceIdx >= faceSet.count) {
+        if (++faceIdx >= face.count) {
             break;
         }
     }
 }
 
-void PlyLoader::processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &faceSet) {
+void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face) {
     string line;
     string element;
     int keyIdx = 0;
@@ -128,9 +128,9 @@ void PlyLoader::processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &fac
             getline(lineStream, count, ' ');
 
             if (element == "vertex") {
-                vertexSet.count = stoi(count);
+                vert.count = stoi(count);
             } else if (element == "face") {
-                faceSet.count = stoi(count);
+                face.count = stoi(count);
             } else {
                 throw runtime_error(string("Bad element: ").append(element));
             }
@@ -146,8 +146,8 @@ void PlyLoader::processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &fac
                 getline(lineStream, dType, ' ');
                 getline(lineStream, dLabel, ' ');
 
-                vertexSet.keys.push_back(dLabel);
-                vertexSet.keyIndex.insert(pair(dLabel, keyIdx++));
+                vert.keys.push_back(dLabel);
+                vert.keyIndex.insert(pair(dLabel, keyIdx++));
             }
         }
     }
