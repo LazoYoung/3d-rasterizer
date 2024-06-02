@@ -1,16 +1,22 @@
 #include "Window.cuh"
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 Window::Window(int width, int height, const char *title) :
-        _width(width), _height(height),
-        _title(title), _window(nullptr),
+        _width(width), _height(height), _title(title),
+        _window(nullptr), _text(nullptr),
         _lastMouseX(-1.0),
         _lastMouseY(-1.0),
         _lastTime(0), _deltaTime(0) {}
 
 Window::~Window() {
+    if (_text) {
+        free(_text);
+    }
+
     glfwTerminate();
 }
 
@@ -41,15 +47,34 @@ bool Window::init(Scene *scene) {
     glfwSetWindowUserPointer(_window, this);
     glfwSetCursorPosCallback(_window, Window::onCursorMove);
     Window::setViewport(_width, _height);
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow *_, int _width, int _height) {
-        Window::setViewport(_width, _height);
-    });
+    glfwSetFramebufferSizeCallback(_window, Window::onResize);
+
+    _text = new Text();
+    _text->init("font/arial.ttf", this);
 
     return true;
 }
 
+ivec2 Window::getDimension() const {
+    return {_width, _height};
+}
+
 void Window::setViewport(GLsizei width, GLsizei height) {
     glViewport(0, 0, width, height);
+}
+
+void Window::onResize(GLFWwindow *window, int width, int height) {
+    auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+
+    for (auto &callback: self->_resizeCallback) {
+        callback(width, height);
+    }
+
+    Window::setViewport(width, height);
+}
+
+void Window::setResizeCallback(const function<void(int, int)> &callback) {
+    _resizeCallback.push_back(callback);
 }
 
 void Window::startDrawing() {
@@ -61,6 +86,7 @@ void Window::startDrawing() {
 
         // Draw pixels
         drawBackground();
+        drawMetrics();
         _scene->draw();
 
         // The front buffer represents the image being displayed
@@ -69,6 +95,9 @@ void Window::startDrawing() {
 
         // Check if any events are triggered and update the window as necessary
         glfwPollEvents();
+
+        // Update profiler every frame
+        _profiler.updateFrameRate();
     }
 }
 
@@ -137,4 +166,15 @@ void Window::updateTime() {
     auto now = static_cast<float>(glfwGetTime());
     _deltaTime = now - _lastTime;
     _lastTime = now;
+}
+
+void Window::drawMetrics() {
+    string metrics;
+    stringstream stream;
+
+    metrics.append("FPS: ");
+    stream << fixed << setprecision(1) << _profiler.getFramesPerSecond();
+    metrics.append(stream.str());
+
+    _text->render(metrics, 20.0f, 20.0f, 18, vec3(1.0f, 1.0f, 1.0f));
 }

@@ -16,10 +16,16 @@ https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e34
 ### Install GLM
 1. Download [glm-light.zip](https://github.com/g-truc/glm/releases)
 2. Unzip the file to extract `glm` folder
-3. Place it inside `include` under the project root 
+3. Place it inside `include` under the project root
+
+### Install FreeType2
+1. Download [ft2132.zip](https://sourceforge.net/projects/freetype/files/freetype2/2.13.2/)
+2. Unzip the file to extract `include` folder
+3. From Visual Studio, build the FreeType2 to obtain `freetype.lib` file
+4. Place them under the project root
 
 ### Project Structure
-<img src="resources/project_structure.png" alt="drawing" _width="300"/>
+![img.png](img.png)
 
 ### Build project
 1. Run CMake to build the project
