@@ -9,11 +9,13 @@ using namespace std::chrono;
 class Profiler {
 public:
     void updateFrameRate();
-    float getFramesPerSecond() const;
+    int getFramesPerSecond() const;
 
 private:
+    const int _delay = 200L;
     high_resolution_clock::time_point _lastTime;
-    float _fps = 0.0f;
+    int _fps = 0;
+    long long _timer = 0L;
 };
 
 
