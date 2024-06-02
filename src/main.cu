@@ -2,6 +2,7 @@
 #include "geometry/Triangle.cuh"
 #include "geometry/Rectangle.cuh"
 #include "geometry/Cube.cuh"
+#include "geometry/PlyLoader.cuh"
 #include <iostream>
 #include <stdexcept>
 
@@ -23,8 +24,11 @@ int main() {
     t3.setRotation(30.0f, 30.0f, 0.0f);
 
     try {
+        Model model = PlyLoader::importModel("model/52_bottle.ply");
+
         Scene scene;
-        scene.add({triangle, rectangle, cube});
+        scene.add(&model);
+//        scene.add({triangle, rectangle, cube, &model});
 
         if (!window.init(&scene)) {
             cout << "Failed to checkBound window!" << endl;

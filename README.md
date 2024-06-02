@@ -25,7 +25,7 @@ https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e34
 4. Place them under the project root
 
 ### Project Structure
-![img.png](resources/img.png)
+![img.png](img.png)
 
 ### Build project
 1. Run CMake to build the project

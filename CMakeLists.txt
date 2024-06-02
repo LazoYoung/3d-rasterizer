@@ -54,15 +54,15 @@ add_custom_command(
 )
 
 # Copy shader and resources
-set(FONT_DIR "${CMAKE_SOURCE_DIR}/resources/fonts")
-set(FONT_DEST_DIR "${DEPLOY_DIRECTORY}/fonts")
+set(RESOURCE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
+set(RESOURCE_DEST_DIR "${DEPLOY_DIRECTORY}")
 set(SHADER_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/shader")
 set(SHADER_DEST_DIR "${DEPLOY_DIRECTORY}/shader")
 file(MAKE_DIRECTORY ${SHADER_SOURCE_DIR})
 file(MAKE_DIRECTORY ${SHADER_DEST_DIR})
 add_custom_target(CopyShaders ALL
         COMMAND ${CMAKE_COMMAND} -E echo "Copying fonts..."
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${FONT_DIR} ${FONT_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCE_SOURCE_DIR} ${RESOURCE_DEST_DIR}
         COMMAND ${CMAKE_COMMAND} -E echo "Copying GLSL files..."
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SOURCE_DIR} ${SHADER_DEST_DIR}
 )

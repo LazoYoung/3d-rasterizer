@@ -50,7 +50,7 @@ bool Window::init(Scene *scene) {
     glfwSetFramebufferSizeCallback(_window, Window::onResize);
 
     _text = new Text();
-    _text->init("fonts/arial.ttf", this);
+    _text->init("font/arial.ttf", this);
 
     return true;
 }
