@@ -8,8 +8,9 @@ struct VertexSet {
     vector<std::string> keys;
     unordered_map<std::string, int> keyIndex;
     int count;
+    int arrayCount;
     size_t arraySize;
-    float *vertices;
+    GLfloat *vertices;
 };
 
 

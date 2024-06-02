@@ -9,3 +9,6 @@ deploy/
 include/
 lib/
 src/glad.c
+
+# Model
+*.ply

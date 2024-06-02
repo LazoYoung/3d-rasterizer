@@ -5,8 +5,9 @@
 struct FaceSet {
     int count;
     int vertexPerFace;
+    int arrayCount;
     size_t arraySize;
-    int *indices;
+    GLuint *indices;
 };
 
 

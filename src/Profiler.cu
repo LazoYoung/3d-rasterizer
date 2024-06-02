@@ -11,7 +11,7 @@ void Profiler::updateFrameRate() {
     _lastTime = now;
 
     if (_timer > _delay) {
-        _fps = diff > 0.0f ? static_cast<int>(floor(1000.0f / diff)) : 0;
+        _fps = diff > 0 ? static_cast<int>(floor(1000.0f / diff)) : 0;
         _timer = 0;
     }
 }

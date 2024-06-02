@@ -18,7 +18,7 @@ void Text::init(const char *fontPath, Window *window) {
     auto dim = window->getDimension();
 
     setProjection(dim.x, dim.y);
-    window->setResizeCallback([this] (int width, int height) {
+    window->setResizeCallback([this](int width, int height) {
         setProjection(width, height);
     });
 
@@ -50,8 +50,7 @@ void Text::init(const char *fontPath, Window *window) {
     bind();
 }
 
-void Text::render(string text, float x, float y, int fontSize, vec3 color)
-{
+void Text::render(string text, float x, float y, int fontSize, vec3 color) {
     if (!_shader) {
         throw runtime_error("Shader is null!");
     }
@@ -63,8 +62,7 @@ void Text::render(string text, float x, float y, int fontSize, vec3 color)
 
     float scale = static_cast<float>(fontSize) / static_cast<float>(_pixelHeight);
 
-    for (auto c = text.begin(); c != text.end(); c++)
-    {
+    for (auto c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];
 
         float xPos = x + ch.bearing.x * scale;
@@ -73,13 +71,13 @@ void Text::render(string text, float x, float y, int fontSize, vec3 color)
         float w = ch.size.x * scale;
         float h = ch.size.y * scale;
         float vertices[6][4] = {
-                {xPos,     yPos + h, 0.0f, 0.0f },
-                {xPos,     yPos,     0.0f, 1.0f },
-                {xPos + w, yPos,     1.0f, 1.0f },
+                {xPos,     yPos + h, 0.0f, 0.0f},
+                {xPos,     yPos,     0.0f, 1.0f},
+                {xPos + w, yPos,     1.0f, 1.0f},
 
-                {xPos,     yPos + h, 0.0f, 0.0f },
-                {xPos + w, yPos,     1.0f, 1.0f },
-                {xPos + w, yPos + h, 1.0f, 0.0f }
+                {xPos,     yPos + h, 0.0f, 0.0f},
+                {xPos + w, yPos,     1.0f, 1.0f},
+                {xPos + w, yPos + h, 1.0f, 0.0f}
         };
         // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.textureId);

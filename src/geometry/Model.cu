@@ -15,7 +15,8 @@ void Model::bind() {
 
 void Model::draw() {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, _faceSet->count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, _faceSet->arrayCount, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
 }
 
 Model::~Model() {

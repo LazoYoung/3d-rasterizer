@@ -26,22 +26,22 @@ void PlyLoader::readPlyFile(const char *path, VertexSet &vertexSet, FaceSet &fac
     processVertex(file, vertexSet, verbose);
     processFace(file, faceSet, verbose);
 
-    cout << "Found " << vertexSet.count << " vertex points and " << faceSet.count << " meshes.\n\n";
+    cout << "Found " << vertexSet.count << " vertex points and " << faceSet.count << " meshes." << endl;
 }
 
 void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose) {
     string line;
     int vertexIdx = 0;
-    int vertexCount = vertexSet.count;
     int keyCount = static_cast<int>(vertexSet.keys.size());
-    vertexSet.arraySize = vertexCount * keyCount;
-    vertexSet.vertices = new float [vertexSet.arraySize];
+    vertexSet.arrayCount = vertexSet.count * keyCount;
+    vertexSet.arraySize = vertexSet.arrayCount * sizeof(GLfloat);
+    vertexSet.vertices = new GLfloat [vertexSet.arrayCount];
 
     while (getline(file, line)) {
         istringstream stream(line);
 
         for (int i = 0; i < keyCount; ++i) {
-            float vertex;
+            GLfloat vertex;
             stream >> vertex;
             vertexSet.vertices[vertexIdx * keyCount + i] = vertex;
 
@@ -54,7 +54,7 @@ void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose
             cout << endl;
         }
 
-        if (++vertexIdx >= vertexCount) {
+        if (++vertexIdx >= vertexSet.count) {
             break;
         }
     }
@@ -63,26 +63,34 @@ void PlyLoader::processVertex(ifstream &file, VertexSet &vertexSet, bool verbose
 void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
     string line;
     int faceIdx = 0;
-    int faceCount = faceSet.count;
     faceSet.vertexPerFace = getVertexPerFace(file);
-    int indexCount = faceSet.vertexPerFace;
-    faceSet.arraySize = faceCount * indexCount;
-    faceSet.indices = new int [faceSet.arraySize];
+    faceSet.arrayCount = faceSet.count * faceSet.vertexPerFace;
+    faceSet.arraySize = faceSet.arrayCount * sizeof(GLfloat);
+    faceSet.indices = new GLuint [faceSet.arrayCount];
+    bool firstLine = true;
 
     while (getline(file, line)) {
-        string vertexPerFace;
+        string firstToken;
         istringstream stream(line);
 
-        stream >> vertexPerFace;
+        if (!firstLine) {
+            stream >> firstToken;
 
-        if (stoi(vertexPerFace) != indexCount) {
-            throw runtime_error("Inconsistent vertex indices!");
+            if (stoi(firstToken) != faceSet.vertexPerFace) {
+                throw runtime_error("Inconsistent vertex indices!");
+            }
         }
 
-        for (int i = 0; i < indexCount; ++i) {
+        firstLine = false;
+
+        if (verbose) {
+            cout << firstToken << ' ';
+        }
+
+        for (int i = 0; i < faceSet.vertexPerFace; ++i) {
             int vertexIndex;
             stream >> vertexIndex;
-            faceSet.indices[faceIdx * indexCount + i] = vertexIndex;
+            faceSet.indices[faceIdx * faceSet.vertexPerFace + i] = vertexIndex;
 
             if (verbose) {
                 cout << vertexIndex << ' ';
@@ -90,10 +98,10 @@ void PlyLoader::processFace(ifstream &file, FaceSet &faceSet, bool verbose) {
         }
 
         if (verbose) {
-            cout << endl;
+            cout << '\n';
         }
 
-        if (++faceIdx >= faceCount) {
+        if (++faceIdx >= faceSet.count) {
             break;
         }
     }
@@ -147,8 +155,6 @@ void PlyLoader::processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &fac
 
 int PlyLoader::getVertexPerFace(ifstream &file) {
     string str;
-    auto pos = file.tellg();
-    getline(file, str, ' ');
-    file.seekg(pos);
+    file >> str;
     return stoi(str);
 }
