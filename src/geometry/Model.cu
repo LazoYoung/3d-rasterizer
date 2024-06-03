@@ -1,27 +1,31 @@
 #include "Model.cuh"
 
-Model::Model(VertexSet *vert, FaceSet *face) :
-        Geometry(vert->vertices, static_cast<GLsizeiptr>(vert->arraySize)),
-        _vertexSet(vert), _faceSet(face) {}
+Model::Model(ModelVertex *vert, ModelFace *face) :
+        Geometry(vert->vertices, static_cast<GLsizeiptr>(vert->arraySize), vert->count, vert->hasNormals),
+        _vertex(vert), _face(face) {}
 
-void Model::bind() {
-    Geometry::bind();
+void Model::bind(Device engine) {
+    Geometry::bind(engine);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(_faceSet->arraySize), _faceSet->indices,
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(_face->arraySize), _face->indices,
                  GL_STATIC_DRAW);
+}
+
+vec3 Model::getColor() {
+    return {1.0f, 0.5f, 0.3f};
 }
 
 void Model::draw() {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, _faceSet->arrayCount, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, _face->arrayCount, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
 Model::~Model() {
-    delete[] _vertexSet->vertices;
-    delete[] _faceSet->indices;
-    delete _vertexSet;
-    delete _faceSet;
+    delete[] _vertex->vertices;
+    delete[] _face->indices;
+    delete _vertex;
+    delete _face;
 }

@@ -61,10 +61,6 @@ mat4 &Camera::getView() {
     _view = new mat4(1.0f);
     mat4 &view = *_view;
     view = glm::lookAt(position, position + front, _up);
-//    view = glm::translate(view, -1.0f * position);
-//    view = glm::rotate(view, radians(-rotation.x), unitX);
-//    view = glm::rotate(view, radians(-rotation.y), unitY);
-//    view = glm::rotate(view, radians(-rotation.z), unitZ);
     return view;
 }
 

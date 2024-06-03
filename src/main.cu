@@ -16,29 +16,35 @@ int main() {
     auto &t1 = triangle->getTransform();
     auto &t2 = rectangle->getTransform();
     auto &t3 = cube->getTransform();
-    t1.setPosition(0.2f, 0.0f, 0.0f);
+    t1.setPosition(-0.5f, 0.5f, 1.0f);
     t1.setRotation(-55.0f, 0.0f, 0.0f);
-    t2.setPosition(0.1f, 0.0f, -1.0f);
+    t2.setPosition(1.5f, 1.0f, -1.0f);
     t2.setRotation(30.0f, 0.0f, 0.0f);
-    t3.setPosition(-0.2f, 0.1f, 0.0f);
+    t3.setPosition(-1.0f, 0.1f, 1.0f);
     t3.setRotation(30.0f, 30.0f, 0.0f);
 
+    // USER OPTIONS
+    Device device = CUDA;
+    bool bakeNormals = true;
+
     try {
-        Model model = PlyLoader::importModel("model/teapot.ply");
+        PlyLoader loader(device, bakeNormals);
+        Model model = loader.importModel("model/teapot.ply");
         model.getTransform().setScale(0.2f, 0.2f, 0.2f);
+        model.getTransform().setRotation(-90.0f, 0.0f, 0.0f);
 
         Scene scene;
-//        scene.add(&model);
-        scene.add({triangle, rectangle, cube, &model});
+        scene.add(&model);
+//        scene.add({triangle, rectangle, cube, &model});
 
         if (!window.init(&scene)) {
             cout << "Failed to checkBound window!" << endl;
             return EXIT_FAILURE;
         }
 
-        Shader shader;
-        shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
-        shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
+        Shader shader(device);
+        shader.add("shader/new_mesh.vert", GL_VERTEX_SHADER);
+        shader.add("shader/new_mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();
         shader.link();
 

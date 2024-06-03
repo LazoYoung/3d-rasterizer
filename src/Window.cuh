@@ -55,7 +55,7 @@ private:
 
     static void onResize(GLFWwindow *window, int width, int height);
 
-    void drawMetrics();
+    void drawText();
 };
 
 

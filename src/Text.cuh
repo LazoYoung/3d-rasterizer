@@ -23,6 +23,10 @@ struct Character {
     FT_Pos advance;
 };
 
+enum TextLayout {
+    topLeft, topRight, bottomLeft, bottomRight
+};
+
 class Text {
 public:
     Text() = default;
@@ -30,7 +34,7 @@ public:
 
     void init(const char *fontPath, Window *window);
 
-    void render(string text, float x, float y, int fontSize, vec3 color);
+    void render(string text, int fontSize, vec3 color, vec2 position, TextLayout layout = bottomLeft);
 
 private:
     const FT_UINT64 _pixelHeight = 48;
@@ -39,6 +43,7 @@ private:
     glm::mat4 _projection{};
     GLuint VAO = 0;
     GLuint VBO = 0;
+    Window *_window = nullptr;
     Shader *_shader = nullptr;
     std::unordered_map<char, Character> _characters;
 
@@ -47,6 +52,8 @@ private:
     void setProjection(int width, int height);
 
     void bind();
+
+    void mapTextPosition(vec2 &pos, TextLayout layout);
 };
 
 

@@ -86,7 +86,7 @@ void Window::startDrawing() {
 
         // Draw pixels
         drawBackground();
-        drawMetrics();
+        drawText();
         _scene->draw();
 
         // The front buffer represents the image being displayed
@@ -168,7 +168,7 @@ void Window::updateTime() {
     _lastTime = now;
 }
 
-void Window::drawMetrics() {
+void Window::drawText() {
     string metrics;
     stringstream stream;
 
@@ -176,5 +176,8 @@ void Window::drawMetrics() {
     stream << fixed << setprecision(1) << _profiler.getFramesPerSecond();
     metrics.append(stream.str());
 
-    _text->render(metrics, 20.0f, 20.0f, 18, vec3(1.0f, 1.0f, 1.0f));
+    _text->render(metrics, 18, vec3(1.0f, 1.0f, 1.0f), vec2(20.0f, 20.0f));
+
+    string credit("Multicore Programming Final Project");
+    _text->render(credit, 14, vec3(1.0f, 1.0f, 1.0f), vec2(230.0f, 20.0f), topRight);
 }

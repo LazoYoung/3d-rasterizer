@@ -8,11 +8,13 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Device.cuh"
 #include <vector>
 #include <string>
 #include <stdexcept>
 #include <functional>
 #include <iostream>
+#include <type_traits>
 
 using namespace std;
 
@@ -23,13 +25,11 @@ struct ShaderUnit {
 
 class Shader {
 public:
-    Shader();
+    explicit Shader(Device device);
 
     ~Shader();
 
     void add(const char *path, GLenum type);
-
-    GLuint getProgramId() const;
 
     void compile();
 
@@ -37,13 +37,19 @@ public:
 
     void useProgram() const;
 
+    GLuint getProgramId() const;
+
+    Device getDevice();
+
+    void setDevice(Device device);
+
     template<typename... T>
     void setUniform(const string &name, T... value) const {
-        GLint location = glGetUniformLocation(program, name.c_str());
+        GLint location = glGetUniformLocation(_programId, name.c_str());
         function < void(GLint, T...) > glFunc;
         constexpr int count = sizeof...(T);
 
-        if constexpr ((is_same_v<GLint, T> || ...) || ((is_same_v<GLboolean, T> || ...))) {
+        if constexpr ((is_same_v<int, T> || ...) || ((is_same_v<bool, T> || ...))) {
             if constexpr (count == 1) {
                 glFunc = glUniform1i;
             } else if constexpr (count == 2) {
@@ -55,7 +61,7 @@ public:
             } else {
                 throw invalid_argument("Too few or many arguments!");
             }
-        } else if constexpr ((is_same_v<GLfloat, T> || ...)) {
+        } else if constexpr ((is_same_v<float, T> || ...)) {
             if constexpr (count == 1) {
                 glFunc = glUniform1f;
             } else if constexpr (count == 2) {
@@ -77,15 +83,16 @@ public:
     template<typename T>
     void setUniformMatrix(const function<void(GLint, GLsizei, GLboolean, const GLfloat*)> &glFunc, const string &name, bool transpose, T matrix) const {
         // todo: location can be cached
-        auto location = glGetUniformLocation(program, name.c_str());
+        auto location = glGetUniformLocation(_programId, name.c_str());
         auto ptr = glm::value_ptr(matrix);
 
         glFunc(location, 1, transpose, ptr);
     }
 
 private:
-    vector<ShaderUnit> units;
-    GLuint program;
+    vector<ShaderUnit> _units;
+    GLuint _programId;
+    Device _device;
 
     static const char *getShaderName(GLenum type);
 

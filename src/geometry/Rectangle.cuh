@@ -7,10 +7,10 @@
 class Rectangle : public Geometry {
 public:
     Rectangle();
-    vec4 getColor() override;
+    vec3 getColor() override;
 
 protected:
-    void bind() override;
+    void bind(Device pipeline) override;
 
     void draw() override;
 

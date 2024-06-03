@@ -21,10 +21,16 @@ public:
 
     void setShader(Shader *shader);
 
+    void setLightPosition(fvec3 pos);
+
 private:
     Camera _camera;
     vector<Geometry *> _geometries;
     Shader *_shader = nullptr;
+    fvec3 _lightPos = vec3(-1.0f, 1.0f, 3.0f);
+    fvec3 _lightColor = vec3(1.0f, 1.0f, 1.0f);
+
+    void updateLight();
 };
 
 

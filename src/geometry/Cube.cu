@@ -1,9 +1,9 @@
 #include "Cube.cuh"
 
-Cube::Cube() : Geometry(_array, sizeof _array) {}
+Cube::Cube() : Geometry(_array, sizeof _array, _count, false) {}
 
-void Cube::bind() {
-    Geometry::bind();
+void Cube::bind(Device pipeline) {
+    Geometry::bind(pipeline);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

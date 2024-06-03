@@ -6,23 +6,38 @@
 #include <string>
 #include <unordered_map>
 #include "Model.cuh"
-#include "VertexSet.cuh"
-#include "FaceSet.cuh"
+#include "ModelVertex.cuh"
+#include "ModelFace.cuh"
+#include "../Profiler.cuh"
 
 using namespace std;
 
 class PlyLoader {
 public:
-    static Model importModel(const char *filePath, bool verbose = false);
+    PlyLoader(Device device, bool bakeNormals, bool verbose = false) :
+            _device(device), _bakeNorms(bakeNormals), _verbose(verbose) {}
+
+    Model importModel(const char *filePath);
 
 private:
-    static void readPlyFile(const char *path, VertexSet &vertexSet, FaceSet &faceSet, bool verbose);
+    Profiler _profiler;
+    Device _device;
+    bool _verbose;
+    bool _bakeNorms;
 
-    static void processHeader(ifstream &file, VertexSet &vertexSet, FaceSet &faceSet);
+    void readPlyFile(const char *path, ModelVertex &vert, ModelFace &face);
 
-    static void processVertex(ifstream &file, VertexSet &vertexSet, bool verbose);
+    void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals) const;
 
-    static void processFace(ifstream &file, FaceSet &faceSet, bool verbose);
+    void processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals) const;
+
+    void processFace(ifstream &file, ModelFace &face) const;
+
+    void bakeNormals(ModelVertex &vert, const ModelFace &face);
+
+    void bakeNormalsFromCPU(ModelVertex &v, const ModelFace &f);
+
+    void bakeNormalsFromCUDA(ModelVertex &v, const ModelFace &f);
 
     static int getVertexPerFace(ifstream &file);
 };
