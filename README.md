@@ -1,6 +1,11 @@
 ## Abstract
 https://parkcymil.notion.site/Gaussian-Rasterizer-b4d2902d58c24e8280431579519e345d
 
+## How to use
+- Place `.ply` model files under `resources/model` directory
+- From `main.cu`, modify `Model model = loader.importModel("model/MY_MODEL.ply");` to point to appropriate model file.
+- Run the executable
+
 ## Contribute
 ### Install GLFW
 1. Download [GLFW pre-compiled binaries](https://www.glfw.org/download.html) for Windows 64-bit
