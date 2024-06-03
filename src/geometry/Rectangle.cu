@@ -8,7 +8,7 @@ vec3 Rectangle::getColor() {
     return {0.0f, green, 0.0f};
 }
 
-void Rectangle::bind(Pipeline pipeline) {
+void Rectangle::bind(Device pipeline) {
     Geometry::bind(pipeline);
 
     glGenBuffers(1, &EBO);

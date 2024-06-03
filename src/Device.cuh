@@ -1,0 +1,10 @@
+#ifndef INC_3D_RASTERIZER_DEVICE_CUH
+#define INC_3D_RASTERIZER_DEVICE_CUH
+
+
+enum Device {
+    CPU, CUDA
+};
+
+
+#endif //INC_3D_RASTERIZER_DEVICE_CUH

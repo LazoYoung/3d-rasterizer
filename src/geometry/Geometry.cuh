@@ -30,7 +30,7 @@ protected:
     float *cpuVertexArray = nullptr;
     float *cudaVertexArray = nullptr;
 
-    virtual void bind(Pipeline pipeline);
+    virtual void bind(Device engine);
 
     virtual void draw() = 0;
 

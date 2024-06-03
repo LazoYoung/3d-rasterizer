@@ -13,6 +13,7 @@ file(GLOB_RECURSE HEADER_FILES
 
 file(GLOB_RECURSE DLL_FILES
         "${CMAKE_SOURCE_DIR}/lib/*.dll"
+        "${CMAKE_SOURCE_DIR}/lib/*.lib"
 )
 
 # Supply source files to produce executable

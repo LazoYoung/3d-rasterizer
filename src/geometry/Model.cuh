@@ -17,7 +17,7 @@ public:
 protected:
     void draw() override;
 
-    void bind(Pipeline pipeline) override;
+    void bind(Device engine) override;
 
 private:
     GLuint EBO = 0;

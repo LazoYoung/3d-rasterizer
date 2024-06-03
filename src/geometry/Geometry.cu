@@ -14,7 +14,7 @@ Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei ve
     _transform.setUpdateCallback([this] { resetModel(); });
 }
 
-void Geometry::bind(Pipeline pipeline) {
+void Geometry::bind(Device engine) {
     if (_isBound) return;
 
     _isBound = true;
@@ -34,17 +34,17 @@ void Geometry::bind(Pipeline pipeline) {
         glEnableVertexAttribArray(0);
     }
 
-    if (pipeline == CUDA) {
-        cudaCheckError(cudaMalloc(&cudaVertexArray, vertexSize));
-        cudaCheckError(cudaMemcpy(cudaVertexArray, vertexArray, vertexSize, cudaMemcpyHostToDevice));
-    } else if (pipeline == OpenMP) {
-        cpuVertexArray = static_cast<float *>(malloc(vertexSize));
-        memcpy(cpuVertexArray, vertexArray, vertexSize);
-    }
-
-    if (dynamic_cast<Model*>(this)) {
-        printf("H[%d] %.3f %.3f %.3f\n", 0, vertexArray[0], vertexArray[1], vertexArray[2]);
-    }
+//    if (engine == CUDA) {
+//        cudaCheckError(cudaMalloc(&cudaVertexArray, vertexSize));
+//        cudaCheckError(cudaMemcpy(cudaVertexArray, vertexArray, vertexSize, cudaMemcpyHostToDevice));
+//    } else if (engine == CPU) {
+//        cpuVertexArray = static_cast<float *>(malloc(vertexSize));
+//        memcpy(cpuVertexArray, vertexArray, vertexSize);
+//    }
+//
+//    if (dynamic_cast<Model*>(this)) {
+//        printf("H[%d] %.3f %.3f %.3f\n", 0, vertexArray[0], vertexArray[1], vertexArray[2]);
+//    }
 }
 
 vec3 Geometry::getColor() {
@@ -52,9 +52,10 @@ vec3 Geometry::getColor() {
 }
 
 void Geometry::render(Scene *scene) {
-    bind(scene->getShader()->getPipeline());
+    bind(scene->getShader()->getDevice());
     updateShader(scene);
-    processVertex(scene);
+    // todo: external pipeline is unstable
+//    processVertex(scene);
     draw();
 }
 
@@ -62,31 +63,31 @@ void Geometry::updateShader(Scene *scene) {
     Shader *shader = scene->getShader();
     Camera &camera = scene->getCamera();
     vec3 color = getColor();
-    bool decouple = shader->getPipeline() != OpenGL;
+//    bool decouple = shader->getDevice() != OpenGL;
 
     shader->useProgram();
 
-    if (!decouple) {
+//    if (!decouple) {
         mat4 &model = getModel();
         mat4 &view = camera.getView();
         mat4 &projection = camera.getProjection();
         shader->setUniformMatrix(glUniformMatrix4fv, "model", false, model);
         shader->setUniformMatrix(glUniformMatrix4fv, "view", false, view);
         shader->setUniformMatrix(glUniformMatrix4fv, "projection", false, projection);
-    }
+//    }
 
-    shader->setUniform("decouple", decouple);
+//    shader->setUniform("decouple", decouple);
     shader->setUniform("color", color.x, color.y, color.z);
 }
 
 void Geometry::processVertex(Scene *scene) {
-    Pipeline pipeline = scene->getShader()->getPipeline();
+    Device engine = scene->getShader()->getDevice();
 
-    switch (pipeline) {
+    switch (engine) {
         case CUDA:
             processVertexCuda(scene);
             break;
-        case OpenMP:
+        case CPU:
             processVertexOpenMP(scene);
             break;
     }

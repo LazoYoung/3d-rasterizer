@@ -8,11 +8,13 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Device.cuh"
 #include <vector>
 #include <string>
 #include <stdexcept>
 #include <functional>
 #include <iostream>
+#include <type_traits>
 
 using namespace std;
 
@@ -21,19 +23,13 @@ struct ShaderUnit {
     GLuint id;
 };
 
-enum Pipeline {
-    OpenGL, OpenMP, CUDA
-};
-
 class Shader {
 public:
-    explicit Shader(Pipeline pipeline = OpenGL);
+    explicit Shader(Device device);
 
     ~Shader();
 
     void add(const char *path, GLenum type);
-
-    GLuint getProgramId() const;
 
     void compile();
 
@@ -41,7 +37,11 @@ public:
 
     void useProgram() const;
 
-    void setPipeline(Pipeline pipeline);
+    GLuint getProgramId() const;
+
+    Device getDevice();
+
+    void setDevice(Device device);
 
     template<typename... T>
     void setUniform(const string &name, T... value) const {
@@ -89,12 +89,10 @@ public:
         glFunc(location, 1, transpose, ptr);
     }
 
-    Pipeline getPipeline();
-
 private:
     vector<ShaderUnit> _units;
     GLuint _programId;
-    Pipeline _pipeline;
+    Device _device;
 
     static const char *getShaderName(GLenum type);
 

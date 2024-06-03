@@ -4,8 +4,8 @@ Model::Model(ModelVertex *vert, ModelFace *face) :
         Geometry(vert->vertices, static_cast<GLsizeiptr>(vert->arraySize), vert->count, vert->hasNormals),
         _vertex(vert), _face(face) {}
 
-void Model::bind(Pipeline pipeline) {
-    Geometry::bind(pipeline);
+void Model::bind(Device engine) {
+    Geometry::bind(engine);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

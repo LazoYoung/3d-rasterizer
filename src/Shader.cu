@@ -2,8 +2,8 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader(Pipeline pipeline) {
-    _pipeline = pipeline;
+Shader::Shader(Device device) {
+    _device = device;
     _programId = glCreateProgram();
 }
 
@@ -98,10 +98,10 @@ string Shader::getSource(const char *path) {
     return src;
 }
 
-Pipeline Shader::getPipeline() {
-    return _pipeline;
+Device Shader::getDevice() {
+    return _device;
 }
 
-void Shader::setPipeline(Pipeline pipeline) {
-    _pipeline = pipeline;
+void Shader::setDevice(Device device) {
+    _device = device;
 }

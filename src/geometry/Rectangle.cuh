@@ -10,7 +10,7 @@ public:
     vec3 getColor() override;
 
 protected:
-    void bind(Pipeline pipeline) override;
+    void bind(Device pipeline) override;
 
     void draw() override;
 

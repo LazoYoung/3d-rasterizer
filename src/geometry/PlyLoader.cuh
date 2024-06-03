@@ -8,17 +8,20 @@
 #include "Model.cuh"
 #include "ModelVertex.cuh"
 #include "ModelFace.cuh"
+#include "../Profiler.cuh"
 
 using namespace std;
 
 class PlyLoader {
 public:
-    explicit PlyLoader(bool bakeNormals = true, bool verbose = false) :
-            _bakeNorms(bakeNormals), _verbose(verbose) {}
+    PlyLoader(Device device, bool bakeNormals, bool verbose = false) :
+            _device(device), _bakeNorms(bakeNormals), _verbose(verbose) {}
 
     Model importModel(const char *filePath);
 
 private:
+    Profiler _profiler;
+    Device _device;
     bool _verbose;
     bool _bakeNorms;
 
@@ -30,9 +33,13 @@ private:
 
     void processFace(ifstream &file, ModelFace &face) const;
 
-    static int getVertexPerFace(ifstream &file);
+    void bakeNormals(ModelVertex &vert, const ModelFace &face);
 
-    static void bakeNormals(ModelVertex &vert, const ModelFace &face);
+    void bakeNormalsFromCPU(ModelVertex &v, const ModelFace &f);
+
+    void bakeNormalsFromCUDA(ModelVertex &v, const ModelFace &f);
+
+    static int getVertexPerFace(ifstream &file);
 };
 
 

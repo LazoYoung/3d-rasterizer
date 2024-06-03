@@ -10,7 +10,7 @@ void Text::setProjection(int width, int height) {
 
 void Text::init(const char *fontPath, Window *window) {
     _window = window;
-    _shader = new Shader();
+    _shader = new Shader(CPU);
     _shader->add("shader/text.vert", GL_VERTEX_SHADER);
     _shader->add("shader/text.frag", GL_FRAGMENT_SHADER);
     _shader->compile();

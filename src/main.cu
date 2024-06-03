@@ -24,10 +24,11 @@ int main() {
     t3.setRotation(30.0f, 30.0f, 0.0f);
 
     // USER OPTIONS
+    Device device = CUDA;
     bool bakeNormals = true;
 
     try {
-        PlyLoader loader(bakeNormals);
+        PlyLoader loader(device, bakeNormals);
         Model model = loader.importModel("model/teapot.ply");
         model.getTransform().setScale(0.2f, 0.2f, 0.2f);
         model.getTransform().setRotation(-90.0f, 0.0f, 0.0f);
@@ -41,7 +42,7 @@ int main() {
             return EXIT_FAILURE;
         }
 
-        Shader shader(OpenGL);
+        Shader shader(device);
         shader.add("shader/new_mesh.vert", GL_VERTEX_SHADER);
         shader.add("shader/new_mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();
