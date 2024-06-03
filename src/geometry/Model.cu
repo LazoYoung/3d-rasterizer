@@ -1,7 +1,7 @@
 #include "Model.cuh"
 
 Model::Model(ModelVertex *vert, ModelFace *face) :
-        Geometry(vert->vertices, static_cast<GLsizeiptr>(vert->arraySize), vert->count),
+        Geometry(vert->vertices, static_cast<GLsizeiptr>(vert->arraySize), vert->count, vert->hasNormals),
         _vertex(vert), _face(face) {}
 
 void Model::bind(Pipeline pipeline) {

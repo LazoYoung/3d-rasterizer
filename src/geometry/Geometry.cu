@@ -6,10 +6,11 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
-Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei vertexCount) :
+Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei vertexCount, bool normals) :
         vertexArray(vertexArray),
         vertexSize(vertexSize),
-        vertexCount(vertexCount) {
+        vertexCount(vertexCount),
+        _useNormals(normals) {
     _transform.setUpdateCallback([this] { resetModel(); });
 }
 
@@ -22,10 +23,16 @@ void Geometry::bind(Pipeline pipeline) {
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertexSize, vertexArray, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    glEnableVertexAttribArray(1);
+
+    if (_useNormals) {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+        glEnableVertexAttribArray(1);
+    } else {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+        glEnableVertexAttribArray(0);
+    }
 
     if (pipeline == CUDA) {
         cudaCheckError(cudaMalloc(&cudaVertexArray, vertexSize));

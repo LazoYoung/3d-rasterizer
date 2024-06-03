@@ -23,8 +23,12 @@ int main() {
     t3.setPosition(-1.0f, 0.1f, 1.0f);
     t3.setRotation(30.0f, 30.0f, 0.0f);
 
+    // USER OPTIONS
+    bool bakeNormals = true;
+
     try {
-        Model model = PlyLoader::importModel("model/teapot.ply");
+        PlyLoader loader(bakeNormals);
+        Model model = loader.importModel("model/teapot.ply");
         model.getTransform().setScale(0.2f, 0.2f, 0.2f);
         model.getTransform().setRotation(-90.0f, 0.0f, 0.0f);
 
@@ -39,7 +43,6 @@ int main() {
 
         Shader shader(OpenGL);
         shader.add("shader/new_mesh.vert", GL_VERTEX_SHADER);
-//        shader.add("shader/decouple.vert", GL_VERTEX_SHADER);
         shader.add("shader/new_mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();
         shader.link();

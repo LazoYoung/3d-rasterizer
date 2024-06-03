@@ -11,6 +11,7 @@ struct ModelVertex {
     int arrayCount;
     size_t arraySize;
     GLfloat *vertices;
+    bool hasNormals;
 };
 
 

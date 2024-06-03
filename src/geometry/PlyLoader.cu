@@ -6,15 +6,15 @@
 #include <iostream>
 #include <algorithm>
 
-Model PlyLoader::importModel(const char *filePath, bool verbose) {
+Model PlyLoader::importModel(const char *filePath) {
     auto *vertexSet = new ModelVertex();
     auto *faceSet = new ModelFace();
 
-    readPlyFile(filePath, *vertexSet, *faceSet, verbose);
+    readPlyFile(filePath, *vertexSet, *faceSet);
     return {vertexSet, faceSet};
 }
 
-void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face, bool verbose) {
+void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face) {
     ifstream file(path);
 
     if (!file.is_open()) {
@@ -25,8 +25,8 @@ void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face
 
     bool bakeNorms;
     processHeader(file, vert, face, bakeNorms);
-    processVertex(file, vert, bakeNorms, verbose);
-    processFace(file, face, verbose);
+    processVertex(file, vert, bakeNorms);
+    processFace(file, face);
 
     if (bakeNorms) {
         bakeNormals(vert, face);
@@ -35,13 +35,14 @@ void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face
     cout << "Found " << vert.count << " vertex points and " << face.count << " meshes." << endl;
 }
 
-void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals, bool verbose) {
+void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals) const {
     string line;
     int vertexIdx = 0;
     int keyCount = static_cast<int>(vert.keys.size());
     vert.arrayCount = vert.count * keyCount;
     vert.arraySize = vert.arrayCount * sizeof(GLfloat);
     vert.vertices = new GLfloat [vert.arrayCount];
+    memset(vert.vertices, 0, vert.arraySize);
 
     while (getline(file, line)) {
         istringstream stream(line);
@@ -55,12 +56,12 @@ void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool bakeNormal
             stream >> vertex;
             vert.vertices[vertexIdx * keyCount + i] = vertex;
 
-            if (verbose) {
+            if (_verbose) {
                 cout << vertex << ' ';
             }
         }
 
-        if (verbose) {
+        if (_verbose) {
             cout << endl;
         }
 
@@ -71,10 +72,10 @@ void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool bakeNormal
 }
 
 void PlyLoader::bakeNormals(ModelVertex &vert, const ModelFace &face) {
-    vector<vec3> normals;
+    vector<vec3> normals(vert.count);
     auto stride = vert.keys.size();
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < face.count; ++i) {
         auto i1 = face.indices[i * 3];
         auto i2 = face.indices[i * 3 + 1];
@@ -84,12 +85,12 @@ void PlyLoader::bakeNormals(ModelVertex &vert, const ModelFace &face) {
         vec3 z = vec3(vert.vertices[i3 * stride], vert.vertices[i3 * stride + 1], vert.vertices[i3 * stride + 2]);
         vec3 normal = glm::cross(y - x, z - x);
 
-        #pragma omp critical
+#pragma omp critical
         {
             normals[i1] += normal;
             normals[i2] += normal;
             normals[i3] += normal;
-        };
+        }
     }
 
     for (int i = 0; i < vert.count; ++i) {
@@ -101,7 +102,7 @@ void PlyLoader::bakeNormals(ModelVertex &vert, const ModelFace &face) {
     }
 }
 
-void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
+void PlyLoader::processFace(ifstream &file, ModelFace &face) const {
     string line;
     int faceIdx = 0;
     face.vertexPerFace = getVertexPerFace(file);
@@ -124,7 +125,7 @@ void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
 
         firstLine = false;
 
-        if (verbose) {
+        if (_verbose) {
             cout << firstToken << ' ';
         }
 
@@ -133,12 +134,12 @@ void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
             stream >> vertexIndex;
             face.indices[faceIdx * face.vertexPerFace + i] = vertexIndex;
 
-            if (verbose) {
+            if (_verbose) {
                 cout << vertexIndex << ' ';
             }
         }
 
-        if (verbose) {
+        if (_verbose) {
             cout << '\n';
         }
 
@@ -148,7 +149,7 @@ void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
     }
 }
 
-void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals) {
+void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals) const {
     string line;
     string element;
     int keyIdx = 0;
@@ -162,6 +163,10 @@ void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face
         string label;
 
         getline(lineStream, label, ' ');
+
+        if (label == "ply" || label == "format") {
+            continue;
+        }
 
         if (label == "element") {
             string count;
@@ -190,18 +195,23 @@ void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face
                 vert.keys.push_back(dLabel);
                 vert.keyIndex.insert(pair(dLabel, keyIdx++));
             }
-        }
 
-        bakeNormals = std::find(vert.keys.begin(), vert.keys.end(), "nx") == vert.keys.end();
-
-        if (bakeNormals) {
-            vert.keys.emplace_back("nx");
-            vert.keyIndex.insert(pair("nx", keyIdx++));
-            vert.keys.emplace_back("ny");
-            vert.keyIndex.insert(pair("ny", keyIdx++));
-            vert.keys.emplace_back("nz");
-            vert.keyIndex.insert(pair("nz", keyIdx++));
+            continue;
         }
+    }
+
+    auto &keys = vert.keys;
+    bool normalFound = std::find(keys.begin(), keys.end(), "nx") != keys.end();
+    bakeNormals = _bakeNorms && !normalFound;
+    vert.hasNormals = bakeNormals || normalFound;
+
+    if (bakeNormals) {
+        keys.emplace_back("nx");
+        vert.keyIndex.insert(pair("nx", keyIdx++));
+        keys.emplace_back("ny");
+        vert.keyIndex.insert(pair("ny", keyIdx++));
+        keys.emplace_back("nz");
+        vert.keyIndex.insert(pair("nz", keyIdx++));
     }
 }
 

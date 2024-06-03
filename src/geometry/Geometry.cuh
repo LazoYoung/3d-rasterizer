@@ -11,7 +11,7 @@ class Scene;
 
 class Geometry {
 public:
-    Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei vertexCount);
+    Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei vertexCount, bool normals);
 
     void render(Scene *scene);
 
@@ -36,6 +36,7 @@ protected:
 
 private:
     Transform _transform;
+    bool _useNormals;
     bool _isBound = false;
     mat4 *_model = nullptr;
 

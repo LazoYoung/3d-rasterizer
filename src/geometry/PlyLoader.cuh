@@ -13,16 +13,22 @@ using namespace std;
 
 class PlyLoader {
 public:
-    static Model importModel(const char *filePath, bool verbose = false);
+    explicit PlyLoader(bool bakeNormals = true, bool verbose = false) :
+            _bakeNorms(bakeNormals), _verbose(verbose) {}
+
+    Model importModel(const char *filePath);
 
 private:
-    static void readPlyFile(const char *path, ModelVertex &vert, ModelFace &face, bool verbose);
+    bool _verbose;
+    bool _bakeNorms;
 
-    static void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals);
+    void readPlyFile(const char *path, ModelVertex &vert, ModelFace &face);
 
-    static void processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals, bool verbose);
+    void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals) const;
 
-    static void processFace(ifstream &file, ModelFace &face, bool verbose);
+    void processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals) const;
+
+    void processFace(ifstream &file, ModelFace &face) const;
 
     static int getVertexPerFace(ifstream &file);
 
