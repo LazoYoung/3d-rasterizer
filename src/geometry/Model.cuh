@@ -12,10 +12,12 @@ public:
 
     ~Model();
 
+    vec3 getColor() override;
+
 protected:
     void draw() override;
 
-    void bind() override;
+    void bind(Pipeline pipeline) override;
 
 private:
     GLuint EBO = 0;

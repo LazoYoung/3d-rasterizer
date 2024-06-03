@@ -7,6 +7,8 @@ void Scene::draw() {
 
     _shader->useProgram();
 
+    updateLight();
+
     for (auto *geometry: _geometries) {
         geometry->render(this);
     }
@@ -32,4 +34,14 @@ Camera &Scene::getCamera() {
 
 void Scene::setShader(Shader *shader) {
     _shader = shader;
+}
+
+void Scene::updateLight() {
+    _shader->useProgram();
+    _shader->setUniform("lightPos", _lightPos.x, _lightPos.y, _lightPos.z);
+    _shader->setUniform("lightColor", _lightColor.x, _lightColor.y, _lightColor.z);
+}
+
+void Scene::setLightPosition(fvec3 pos) {
+    _lightPos = pos;
 }

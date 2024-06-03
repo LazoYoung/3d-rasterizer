@@ -89,15 +89,6 @@ public:
         glFunc(location, 1, transpose, ptr);
     }
 
-    template<typename T>
-    void setUniformVector(const function<void(GLint, GLsizei, const GLfloat*)> &glFunc, const string &name, T vector) const {
-        // todo: location can be cached
-        auto location = glGetUniformLocation(_programId, name.c_str());
-        auto ptr = glm::value_ptr(vector);
-
-        glFunc(location, 1, ptr);
-    }
-
     Pipeline getPipeline();
 
 private:

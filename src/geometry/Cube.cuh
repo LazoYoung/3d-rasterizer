@@ -9,7 +9,7 @@ public:
     Cube();
 
 protected:
-    void bind() override;
+    void bind(Pipeline pipeline) override;
 
     void draw() override;
 

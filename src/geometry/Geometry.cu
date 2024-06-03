@@ -1,5 +1,6 @@
 #include "Geometry.cuh"
 #include "glm/glm.hpp"
+#include "Model.cuh"
 #include <vector_types.h>
 #include <vector_functions.h>
 #include <cuda_runtime.h>
@@ -12,26 +13,39 @@ Geometry::Geometry(const GLfloat *vertexArray, GLsizeiptr vertexSize, GLsizei ve
     _transform.setUpdateCallback([this] { resetModel(); });
 }
 
-void Geometry::bind() {
+void Geometry::bind(Pipeline pipeline) {
     if (_isBound) return;
 
+    _isBound = true;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertexSize, vertexArray, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(0);
-    cudaCheckError(cudaMalloc(&cudaVertexArray, vertexSize));
-    cudaCheckError(cudaMemcpy(cudaVertexArray, vertexArray, vertexSize, cudaMemcpyHostToDevice));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+    glEnableVertexAttribArray(1);
+
+    if (pipeline == CUDA) {
+        cudaCheckError(cudaMalloc(&cudaVertexArray, vertexSize));
+        cudaCheckError(cudaMemcpy(cudaVertexArray, vertexArray, vertexSize, cudaMemcpyHostToDevice));
+    } else if (pipeline == OpenMP) {
+        cpuVertexArray = static_cast<float *>(malloc(vertexSize));
+        memcpy(cpuVertexArray, vertexArray, vertexSize);
+    }
+
+    if (dynamic_cast<Model*>(this)) {
+        printf("H[%d] %.3f %.3f %.3f\n", 0, vertexArray[0], vertexArray[1], vertexArray[2]);
+    }
 }
 
-vec4 Geometry::getColor() {
-    return {1.0f, 1.0f, 1.0f, 1.0f};
+vec3 Geometry::getColor() {
+    return {1.0f, 1.0f, 1.0f};
 }
 
 void Geometry::render(Scene *scene) {
-    bind();
+    bind(scene->getShader()->getPipeline());
     updateShader(scene);
     processVertex(scene);
     draw();
@@ -40,8 +54,10 @@ void Geometry::render(Scene *scene) {
 void Geometry::updateShader(Scene *scene) {
     Shader *shader = scene->getShader();
     Camera &camera = scene->getCamera();
-    vec4 color = getColor();
+    vec3 color = getColor();
     bool decouple = shader->getPipeline() != OpenGL;
+
+    shader->useProgram();
 
     if (!decouple) {
         mat4 &model = getModel();
@@ -53,7 +69,7 @@ void Geometry::updateShader(Scene *scene) {
     }
 
     shader->setUniform("decouple", decouple);
-    shader->setUniform("color", color.x, color.y, color.z, color.w);
+    shader->setUniform("color", color.x, color.y, color.z);
 }
 
 void Geometry::processVertex(Scene *scene) {
@@ -99,7 +115,7 @@ void Geometry::resetModel() {
     }
 }
 
-__global__ void transformFromKernel(const float *d_vertices, const float *d_transform, float *d_result, int vertexCount) {
+__global__ void transformFromKernel(const float *d_vertices, const float *d_transform, float *d_result, int vertexCount, bool model) {
     unsigned int vertexIndex = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (vertexIndex < vertexCount) {
@@ -120,6 +136,11 @@ __global__ void transformFromKernel(const float *d_vertices, const float *d_tran
         d_result[idx] = result.x;
         d_result[idx + 1] = result.y;
         d_result[idx + 2] = result.z;
+
+        if (model && vertexIndex == 0) {
+            printf("K[%d] %.3f %.3f %.3f\n", vertexIndex, d_vertices[0], d_vertices[1], d_vertices[2]);
+            printf("K[%d] %.3f %.3f %.3f\n", vertexIndex, d_result[0], d_result[1], d_result[2]);
+        }
     }
 }
 
@@ -131,12 +152,16 @@ void Geometry::processVertexOpenMP(Scene *scene) {
     mat4 transform = proj * view * model;
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    auto *vertices = static_cast<GLfloat *>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY));
+    float *vertices = cpuVertexArray;
+    auto *pos = static_cast<GLfloat *>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 
+    // todo seems to crash the app
     for (int i = 0; i < vertexCount; ++i) {
         vec4 vertex(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2], 1.0f);
-        scene->getShader()->useProgram();
-        scene->getShader()->setUniformVector(glUniform3fv, "dPosition", vertex);
+        vec4 result = transform * vertex;
+        pos[i * 3] = result.x;
+        pos[i * 3 + 1] = result.y;
+        pos[i * 3 + 2] = result.z;
     }
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -166,7 +191,7 @@ void Geometry::processVertexCuda(Scene *scene) {
 
     dim3 blockSize(256);
     dim3 gridSize((vertexCount + blockSize.x - 1) / blockSize.x);
-    transformFromKernel<<<gridSize, blockSize>>>(cudaVertexArray, d_transform, d_vertices, vertexCount);
+    transformFromKernel<<<gridSize, blockSize>>>(cudaVertexArray, d_transform, d_vertices, vertexCount, dynamic_cast<Model*>(this) != nullptr);
     cudaDeviceSynchronize();
 
     // release memory

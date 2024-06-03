@@ -18,13 +18,15 @@ public:
 private:
     static void readPlyFile(const char *path, ModelVertex &vert, ModelFace &face, bool verbose);
 
-    static void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face);
+    static void processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals);
 
-    static void processVertex(ifstream &file, ModelVertex &vert, bool verbose);
+    static void processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals, bool verbose);
 
     static void processFace(ifstream &file, ModelFace &face, bool verbose);
 
     static int getVertexPerFace(ifstream &file);
+
+    static void bakeNormals(ModelVertex &vert, const ModelFace &face);
 };
 
 

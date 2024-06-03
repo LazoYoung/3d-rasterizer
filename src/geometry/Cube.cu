@@ -2,8 +2,8 @@
 
 Cube::Cube() : Geometry(_array, sizeof _array, _count) {}
 
-void Cube::bind() {
-    Geometry::bind();
+void Cube::bind(Pipeline pipeline) {
+    Geometry::bind(pipeline);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

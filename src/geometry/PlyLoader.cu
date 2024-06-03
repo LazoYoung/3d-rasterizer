@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 Model PlyLoader::importModel(const char *filePath, bool verbose) {
     auto *vertexSet = new ModelVertex();
@@ -22,14 +23,19 @@ void PlyLoader::readPlyFile(const char *path, ModelVertex &vert, ModelFace &face
 
     cout << "Loading model: " << path << '\n';
 
-    processHeader(file, vert, face);
-    processVertex(file, vert, verbose);
+    bool bakeNorms;
+    processHeader(file, vert, face, bakeNorms);
+    processVertex(file, vert, bakeNorms, verbose);
     processFace(file, face, verbose);
+
+    if (bakeNorms) {
+        bakeNormals(vert, face);
+    }
 
     cout << "Found " << vert.count << " vertex points and " << face.count << " meshes." << endl;
 }
 
-void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool verbose) {
+void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool bakeNormals, bool verbose) {
     string line;
     int vertexIdx = 0;
     int keyCount = static_cast<int>(vert.keys.size());
@@ -41,6 +47,10 @@ void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool verbose) {
         istringstream stream(line);
 
         for (int i = 0; i < keyCount; ++i) {
+            if (bakeNormals && vert.keyIndex["nx"] <= i) {
+                break;
+            }
+
             GLfloat vertex;
             stream >> vertex;
             vert.vertices[vertexIdx * keyCount + i] = vertex;
@@ -57,6 +67,37 @@ void PlyLoader::processVertex(ifstream &file, ModelVertex &vert, bool verbose) {
         if (++vertexIdx >= vert.count) {
             break;
         }
+    }
+}
+
+void PlyLoader::bakeNormals(ModelVertex &vert, const ModelFace &face) {
+    vector<vec3> normals;
+    auto stride = vert.keys.size();
+
+    #pragma omp parallel for
+    for (int i = 0; i < face.count; ++i) {
+        auto i1 = face.indices[i * 3];
+        auto i2 = face.indices[i * 3 + 1];
+        auto i3 = face.indices[i * 3 + 2];
+        vec3 x = vec3(vert.vertices[i1 * stride], vert.vertices[i1 * stride + 1], vert.vertices[i1 * stride + 2]);
+        vec3 y = vec3(vert.vertices[i2 * stride], vert.vertices[i2 * stride + 1], vert.vertices[i2 * stride + 2]);
+        vec3 z = vec3(vert.vertices[i3 * stride], vert.vertices[i3 * stride + 1], vert.vertices[i3 * stride + 2]);
+        vec3 normal = glm::cross(y - x, z - x);
+
+        #pragma omp critical
+        {
+            normals[i1] += normal;
+            normals[i2] += normal;
+            normals[i3] += normal;
+        };
+    }
+
+    for (int i = 0; i < vert.count; ++i) {
+        vec3 normal = glm::normalize(normals[i]);
+
+        vert.vertices[i * stride + 3] = normal.x;
+        vert.vertices[i * stride + 4] = normal.y;
+        vert.vertices[i * stride + 5] = normal.z;
     }
 }
 
@@ -107,7 +148,7 @@ void PlyLoader::processFace(ifstream &file, ModelFace &face, bool verbose) {
     }
 }
 
-void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face) {
+void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face, bool &bakeNormals) {
     string line;
     string element;
     int keyIdx = 0;
@@ -149,6 +190,17 @@ void PlyLoader::processHeader(ifstream &file, ModelVertex &vert, ModelFace &face
                 vert.keys.push_back(dLabel);
                 vert.keyIndex.insert(pair(dLabel, keyIdx++));
             }
+        }
+
+        bakeNormals = std::find(vert.keys.begin(), vert.keys.end(), "nx") == vert.keys.end();
+
+        if (bakeNormals) {
+            vert.keys.emplace_back("nx");
+            vert.keyIndex.insert(pair("nx", keyIdx++));
+            vert.keys.emplace_back("ny");
+            vert.keyIndex.insert(pair("ny", keyIdx++));
+            vert.keys.emplace_back("nz");
+            vert.keyIndex.insert(pair("nz", keyIdx++));
         }
     }
 }

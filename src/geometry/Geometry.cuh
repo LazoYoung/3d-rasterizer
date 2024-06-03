@@ -19,7 +19,7 @@ public:
 
     mat4 &getModel();
 
-    virtual vec4 getColor();
+    virtual vec3 getColor();
 
 protected:
     const GLfloat *vertexArray;
@@ -27,9 +27,10 @@ protected:
     GLsizei vertexCount;
     GLuint VAO = 0;
     GLuint VBO = 0;
+    float *cpuVertexArray = nullptr;
     float *cudaVertexArray = nullptr;
 
-    virtual void bind();
+    virtual void bind(Pipeline pipeline);
 
     virtual void draw() = 0;
 

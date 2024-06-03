@@ -29,16 +29,18 @@ int main() {
         model.getTransform().setRotation(-90.0f, 0.0f, 0.0f);
 
         Scene scene;
-        scene.add({triangle, rectangle, cube, &model});
+        scene.add(&model);
+//        scene.add({triangle, rectangle, cube, &model});
 
         if (!window.init(&scene)) {
             cout << "Failed to checkBound window!" << endl;
             return EXIT_FAILURE;
         }
 
-        Shader shader(CUDA);
-        shader.add("shader/mesh.vert", GL_VERTEX_SHADER);
-        shader.add("shader/mesh.frag", GL_FRAGMENT_SHADER);
+        Shader shader(OpenGL);
+        shader.add("shader/new_mesh.vert", GL_VERTEX_SHADER);
+//        shader.add("shader/decouple.vert", GL_VERTEX_SHADER);
+        shader.add("shader/new_mesh.frag", GL_FRAGMENT_SHADER);
         shader.compile();
         shader.link();
 
